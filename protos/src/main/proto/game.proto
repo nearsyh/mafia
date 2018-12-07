@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.nearsyh.mafia.protos";
+
+package com.nearsyh.mafia.protos;
+
+message TurnStatus {
+  int32 frozen_player_index = 1;                  // 可以不冻?
+  int32 toast_player_index = 2;                   // 不可以不放.
+  CharacterIndex injection_character_index = 3;   // ?
+  CharacterIndex guard_character_index = 4;       // 可以不守.
+  CharacterIndex kill_character_index = 5;        // 可以不杀, 有面包一定要杀.
+  bool has_affection = 6;                         // 是否魅惑.
+  CharacterIndex affected_character = 7;          // 魅惑的人.
+  CharacterIndex cure_character_index = 8;        // 药救的人. 可以不救.
+  CharacterIndex toxic_character_index = 9;       // 毒死的人. 可以不毒.
+  CharacterIndex verify_character_index = 10;     // 查验的人.
+  int32 muted_player_index = 11;                  // 禁言的人.
+  CharacterIndex dead_characters = 12;            // 所有死了的人.
+  CharacterIndex voted_characters = 13;           // 投死的人.
+}
+
+message Game {
+  string id = 1;
+  repeated Player players = 2;
+  int32 turn_id = 3;
+
+  TurnStatus last_turn = 4;
+  TurnStatus current_turn = 5;
+  int32 no_kill_count = 6;
+  repeated CharacterIndex affected_characters = 7;
+
+  int64 start_timestamp = 11;
+  int64 end_timestamp = 12;
+}
+
+message Player {
+  Character character_top = 1;
+  Character character_bot = 2;
+  int32 index = 3;
+}
+
+enum CharacterType {
+  CHARACTER_TYPE_UNSPECIFIED = 0;
+  NORMAL_VILLAGER = 1;            // 普通村民
+  WEREWOLF = 2;                   // 狼人
+  SEER = 3;                       // 预言家
+  DOCTOR = 4;                     // 医生
+  WITCH = 5;                      // 女巫
+  GUARDIAN = 6;                   // 守卫
+  PENGUIN = 7;                    // 企鹅
+  TOAST_BAKER = 8;                // 面包师傅
+  WOLF_BEAUTY = 9;                // 狼美人
+  WOLF_CHILD = 10;                // 野孩子
+  SUCCUBUS = 11;                  // 魅狼
+  MUTER = 12;                     // 禁言长老
+  PRINCESS = 13;                  // 公主
+  KNIGHT = 14;                    // 骑士
+  FOX = 15;                       // 狐狸
+}
+
+message CharacterIndex {
+  int32 player_index = 1;
+  int32 character_index = 2;
+}
+
+message Character {
+  CharacterType character_type = 1;
+  bool is_dead = 2;
+  int32 injection_count = 3;
+  oneof properties {
+    WitchProperty witch_property = 21;
+  }
+}
+
+message WitchProperty {
+  bool cure_used = 1;
+  bool toxic_used = 2;
+}
+
+message WolfChildProperty {
+  int32 idol_player_index = 1;
+}
+
+message SuccubusProperty {
+  int32 lover_player_index = 1;
+}
+
+message PrincessProperty {
+  bool skill_used = 1;
+}
+
+message KnightProperty {
+  bool skill_used = 1;
+}
+
