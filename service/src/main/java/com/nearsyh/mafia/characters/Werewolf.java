@@ -1,5 +1,32 @@
 package com.nearsyh.mafia.characters;
 
-public class Werewolf {
+import com.google.common.base.Preconditions;
+import com.nearsyh.mafia.common.GameAccessor;
+import com.nearsyh.mafia.protos.CharacterType;
+import com.nearsyh.mafia.protos.Event;
+import com.nearsyh.mafia.protos.EventType;
+import com.nearsyh.mafia.protos.Game;
 
+public final class Werewolf extends AbstractCharacter implements Character {
+
+    private static final Werewolf INSTANCE = new Werewolf();
+    static {
+        registerEventListeners(EventType.KILL, Werewolf.INSTANCE()::kill);
+    }
+
+    private Werewolf() {
+        super(CharacterType.WEREWOLF);
+    }
+
+    private static Werewolf INSTANCE() {
+        return INSTANCE;
+    }
+
+    private Game kill(Game game, Event event) {
+        Preconditions.checkArgument(event.getEventType() == EventType.KILL);
+        var currentTurn = game.getCurrentTurn().toBuilder();
+        GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
+            .ifPresent(currentTurn::setKillCharacterIndex);
+        return game.toBuilder().setCurrentTurn(currentTurn).build();
+    }
 }

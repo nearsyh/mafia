@@ -4,9 +4,7 @@ import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractCharacter implements Character {
