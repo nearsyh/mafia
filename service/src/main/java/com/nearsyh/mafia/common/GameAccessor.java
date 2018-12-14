@@ -80,4 +80,16 @@ public final class GameAccessor {
         return false;
     }
 
+    public static int noKillNightsCount(Game game) {
+        int count = 0;
+        for (int i = game.getPastTurnsCount() - 1; i >= 0; i --) {
+            if (game.getPastTurns(i).getKillCharacterIndex().getPlayerIndex() < 0) {
+                count += 1;
+            } else {
+                break;
+            }
+        }
+        return count;
+    }
+
 }

@@ -41,6 +41,7 @@ message GameStatus {
   // 角色存活状态
   repeated CharacterIndex dead_characters = 7;
   repeated CharacterIndex alive_characters = 8;
+
 }
 
 message Game {
