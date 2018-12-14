@@ -9,7 +9,8 @@ import java.util.Optional;
 
 public final class GameAccessor {
 
-    private GameAccessor() {}
+    private GameAccessor() {
+    }
 
     public static boolean isPlayerAlive(Game game, int playerIndex) {
         if (playerIndex < 0 || playerIndex >= game.getPlayersCount()) {
@@ -22,7 +23,8 @@ public final class GameAccessor {
         return !player.getCharacterTop().getIsDead() || !player.getCharacterBot().getIsDead();
     }
 
-    public static Optional<CharacterIndex> getCurrentAliveCharacterIndex(Game game, int playerIndex) {
+    public static Optional<CharacterIndex> getCurrentAliveCharacterIndex(Game game,
+        int playerIndex) {
         if (playerIndex < 0 || playerIndex >= game.getPlayersCount()) {
             return Optional.empty();
         }
@@ -38,7 +40,8 @@ public final class GameAccessor {
 
     private static boolean isWolf(Character character) {
         var characterType = character.getCharacterType();
-        return characterType == CharacterType.WEREWOLF || characterType == CharacterType.WOLF_BEAUTY;
+        return characterType == CharacterType.WEREWOLF
+            || characterType == CharacterType.WOLF_BEAUTY;
     }
 
     private static boolean isWolfOrSuccubus(Character character) {
@@ -82,7 +85,7 @@ public final class GameAccessor {
 
     public static int noKillNightsCount(Game game) {
         int count = 0;
-        for (int i = game.getPastTurnsCount() - 1; i >= 0; i --) {
+        for (int i = game.getPastTurnsCount() - 1; i >= 0; i--) {
             if (game.getPastTurns(i).getKillCharacterIndex().getPlayerIndex() < 0) {
                 count += 1;
             } else {
@@ -90,6 +93,13 @@ public final class GameAccessor {
             }
         }
         return count;
+    }
+
+    public static int lastGuardedPlayer(Game game) {
+        return game.getPastTurnsCount() <= 0
+            ? -1
+            : game.getPastTurns(game.getPastTurnsCount() - 1).getGuardCharacterIndex()
+                .getPlayerIndex();
     }
 
 }
