@@ -52,6 +52,7 @@ message Game {
   TurnStatus current_turn = 5;
   repeated TurnStatus past_turns = 6;
   GameStatus game_status = 7;
+  Event next_event = 8;
 
   int64 start_timestamp = 11;
   int64 end_timestamp = 12;
@@ -123,5 +124,7 @@ message Event {
   repeated int32 targets = 3;
   int64 timestamp = 4;
   int32 turn_id = 5;
+  string last_event_response = 6;
+  string current_event_response = 7;
 }
 

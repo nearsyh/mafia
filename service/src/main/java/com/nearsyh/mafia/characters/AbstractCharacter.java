@@ -29,8 +29,8 @@ public abstract class AbstractCharacter implements Character {
         return EVENT_LISTENERS.getOrDefault(eventType, CharacterAction.NOOP);
     }
 
-    public static Event nextEvent(Game game, Event currentEvent) {
-        return null;
+    public static Event.Builder nextEvent(Game game, Event currentEvent) {
+        return Event.newBuilder();
     }
 
     private final CharacterType characterType;

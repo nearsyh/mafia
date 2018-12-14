@@ -11,15 +11,11 @@ public final class Werewolf extends AbstractCharacter implements Character {
 
     private static final Werewolf INSTANCE = new Werewolf();
     static {
-        registerEventListeners(EventType.KILL, Werewolf.INSTANCE()::kill);
+        registerEventListeners(EventType.KILL, INSTANCE::kill);
     }
 
     private Werewolf() {
         super(CharacterType.WEREWOLF);
-    }
-
-    private static Werewolf INSTANCE() {
-        return INSTANCE;
     }
 
     private Game kill(Game game, Event event) {
@@ -27,6 +23,9 @@ public final class Werewolf extends AbstractCharacter implements Character {
         var currentTurn = game.getCurrentTurn().toBuilder();
         GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
             .ifPresent(currentTurn::setKillCharacterIndex);
-        return game.toBuilder().setCurrentTurn(currentTurn).build();
+        return game.toBuilder()
+            .setCurrentTurn(currentTurn)
+            .setNextEvent(AbstractCharacter.nextEvent(game, event))
+            .build();
     }
 }
