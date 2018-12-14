@@ -22,7 +22,8 @@ public class InMemoryGameService implements GameService {
     public Mono<Game> createGame(Game game) {
         String gameId = UUID.randomUUID().toString();
         game = game.toBuilder().setId(gameId).build();
-        return Mono.justOrEmpty(GAME_MAP.put(gameId, game));
+        GAME_MAP.put(gameId, game);
+        return Mono.justOrEmpty(game);
     }
 
     @Override
