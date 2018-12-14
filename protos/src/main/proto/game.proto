@@ -21,6 +21,28 @@ message TurnStatus {
   CharacterIndex voted_characters = 13;           // 投死的人.
 }
 
+message GameStatus {
+  // 女巫技能
+  bool is_cure_used = 1;
+  bool is_toxic_used = 2;
+
+  // 野孩子
+  int32 idol_index = 3;
+
+  // 魅狼
+  int32 lover_index = 4;
+
+  // 公主
+  int32 is_pardon_used = 5;
+
+  // 骑士
+  int32 is_duel_used = 6;
+
+  // 角色存活状态
+  repeated CharacterIndex dead_characters = 7;
+  repeated CharacterIndex alive_characters = 8;
+}
+
 message Game {
   string id = 1;
   repeated Player players = 2;
@@ -28,8 +50,8 @@ message Game {
 
   TurnStatus last_turn = 4;
   TurnStatus current_turn = 5;
-  int32 no_kill_count = 6;
-  repeated CharacterIndex affected_characters = 7;
+  repeated TurnStatus past_turns = 6;
+  GameStatus game_status = 7;
 
   int64 start_timestamp = 11;
   int64 end_timestamp = 12;
@@ -69,29 +91,37 @@ message Character {
   CharacterType character_type = 1;
   bool is_dead = 2;
   int32 injection_count = 3;
-  oneof properties {
-    WitchProperty witch_property = 21;
-  }
 }
 
-message WitchProperty {
-  bool cure_used = 1;
-  bool toxic_used = 2;
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  SUNSET = 1;
+  CHOOSE_IDOL = 2;
+  CHOOSE_LOVER = 3;
+  FREEZE = 4;
+  TOAST = 5;
+  INJECT = 6;
+  GUARD = 7;
+  KILL = 8;
+  AFFECT = 9;
+  CURE = 10;
+  TOXIC = 11;
+  VERIFY = 12;
+  FOX_VERIFY = 13;
+  MUTE = 14;
+  SUNRISE = 15;
+  ANNOUNCE_DEATH = 16;
+  SPEECH = 17;
+  DUEL = 18;
+  PARDON = 19;
+  CONFESS = 20;
 }
 
-message WolfChildProperty {
-  int32 idol_player_index = 1;
-}
-
-message SuccubusProperty {
-  int32 lover_player_index = 1;
-}
-
-message PrincessProperty {
-  bool skill_used = 1;
-}
-
-message KnightProperty {
-  bool skill_used = 1;
+message Event {
+  EventType eventType = 1;
+  repeated int32 candidate_targets = 2;
+  repeated int32 targets = 3;
+  int64 timestamp = 4;
+  int32 turn_id = 5;
 }
 
