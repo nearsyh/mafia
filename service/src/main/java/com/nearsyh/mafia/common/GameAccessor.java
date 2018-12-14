@@ -143,5 +143,4 @@ public final class GameAccessor {
                 || !(player.getCharacterBot().getIsDead()
                 && characterTypes.contains(player.getCharacterBot().getCharacterType())));
     }
-
 }

@@ -89,7 +89,6 @@ public abstract class AbstractCharacter implements Character {
         EventType.SUNSET
     );
     private static int START_OF_DAY = PRECEDENCE.indexOf(EventType.SUNRISE);
-
     private static EventType nextEventType(Game game, Event currentEvent) {
         var currentEventType = currentEvent.getEventType();
         var currentPrecedence = PRECEDENCE.indexOf(currentEventType);
