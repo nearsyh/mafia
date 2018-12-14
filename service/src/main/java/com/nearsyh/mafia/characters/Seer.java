@@ -1,22 +1,34 @@
 package com.nearsyh.mafia.characters;
 
+import static com.nearsyh.mafia.common.GameAccessor.NO_PLAYER;
+
 import com.google.common.base.Preconditions;
 import com.nearsyh.mafia.common.GameAccessor;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
+import java.util.HashSet;
 
 public final class Seer extends AbstractCharacter implements Character {
 
     private static final Seer INSTANCE = new Seer();
 
     static {
-        registerEventListeners(EventType.VERIFY, INSTANCE::see);
+        registerEventListeners(EventType.VERIFY, INSTANCE.getCharacterType(), INSTANCE::see);
+        registerPreEventListeners(EventType.VERIFY, INSTANCE::preSee);
     }
 
     Seer() {
         super(CharacterType.SEER);
+    }
+
+    private Event.Builder preSee(Game game, Event.Builder nextEventBuilder) {
+        var candidatePlayers = new HashSet<>(GameAccessor.allAlivePlayersIndex(game));
+        candidatePlayers.add(NO_PLAYER);
+        return nextEventBuilder.clearCandidateTargets()
+            .setCurrentEventResponse("预言家请睁眼选择一个人查验身份 (可以不查)")
+            .addAllCandidateTargets(candidatePlayers);
     }
 
     private Game see(Game game, Event event) {
@@ -27,10 +39,9 @@ public final class Seer extends AbstractCharacter implements Character {
         var isPlayerBad = GameAccessor.doesPlayerSeemBad(game, event.getTargets(0));
         return game.toBuilder()
             .setCurrentTurn(currentTurn)
-            .setNextEvent(AbstractCharacter.nextEvent(game, event)
-                .setLastEventResponse(
-                    String.format("这个手势是好人, 这个手势是坏人, 它是这个 (%s)",
-                        isPlayerBad ? "坏人" : "好人")))
+            .setNextEvent(game.getNextEvent().toBuilder()
+                .setLastEventResponse(String.format(
+                    "这个手势是好人, 这个手势是坏人, TA 是这个 (%s)", isPlayerBad ? "坏人" : "好人")))
             .build();
     }
 

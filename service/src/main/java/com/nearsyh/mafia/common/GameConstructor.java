@@ -4,7 +4,6 @@ import com.nearsyh.mafia.protos.Character;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.protos.Player;
-import com.nearsyh.mafia.protos.Step;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;

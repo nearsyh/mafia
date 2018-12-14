@@ -114,9 +114,11 @@ enum EventType {
   SUNRISE = 15;
   ANNOUNCE_DEATH = 16;
   SPEECH = 17;
-  DUEL = 18;
-  PARDON = 19;
-  CONFESS = 20;
+  VOTE = 18;
+  DUEL = 19;
+  PARDON = 20;
+  CONFESS = 21;
+  END = 22;
 }
 
 message Event {

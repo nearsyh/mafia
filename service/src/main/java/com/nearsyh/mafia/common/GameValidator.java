@@ -1,7 +1,5 @@
 package com.nearsyh.mafia.common;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.nearsyh.mafia.protos.CharacterType;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +9,10 @@ public final class GameValidator {
 
     private GameValidator() {}
 
-    private static Map<CharacterType, Set<CharacterType>> CONFLICT_TYPES = ImmutableMap.of(
-        CharacterType.WEREWOLF, ImmutableSet.of(CharacterType.SEER, CharacterType.TOAST_BAKER));
+    private static Map<CharacterType, Set<CharacterType>> CONFLICT_TYPES = Map.of(
+        CharacterType.WEREWOLF, Set.of(CharacterType.SEER, CharacterType.TOAST_BAKER),
+        CharacterType.WOLF_BEAUTY, Set.of(CharacterType.SEER, CharacterType.TOAST_BAKER),
+        CharacterType.SUCCUBUS, Set.of(CharacterType.SEER, CharacterType.TOAST_BAKER));
 
     public static boolean isCharacterListValid(List<CharacterType> characterTypeList) {
         for (int i = 0; i < characterTypeList.size(); i += 2) {

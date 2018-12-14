@@ -5,9 +5,13 @@ import com.nearsyh.mafia.protos.CharacterIndex;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.protos.Player;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class GameAccessor {
+
+    public static final int NO_PLAYER = -1;
 
     private GameAccessor() {
     }
@@ -100,6 +104,35 @@ public final class GameAccessor {
             ? -1
             : game.getPastTurns(game.getPastTurnsCount() - 1).getGuardCharacterIndex()
                 .getPlayerIndex();
+    }
+
+    public static List<Integer> allAlivePlayersIndex(Game game) {
+        return game.getPlayersList().stream()
+            .filter(GameAccessor::isPlayerAlive)
+            .map(Player::getIndex)
+            .collect(Collectors.toList());
+    }
+
+    public static boolean isPlayerActuallyKilledThisTurnForWitch(Game game, int playerIndex) {
+        if (playerIndex < 0) {
+            return false;
+        }
+        var currentTurn = game.getCurrentTurn();
+        if (currentTurn.getKillCharacterIndex().getPlayerIndex() != playerIndex) {
+            return false;
+        }
+        if (currentTurn.getGuardCharacterIndex().getPlayerIndex() != playerIndex) {
+            return false;
+        }
+        // TODO
+        if (currentTurn.getFrozenPlayerIndex() != playerIndex) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isCureUsedInThisTurn(Game game) {
+        return game.getCurrentTurn().getCureCharacterIndex().getPlayerIndex() >= 0;
     }
 
 }

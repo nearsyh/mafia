@@ -37,8 +37,7 @@ public class GameManagementHandler {
     public Mono<Game> updateGame(
         @PathVariable("game_id") String gameId, @RequestBody Event event) {
         return gameService.getGame(gameId)
-            .map(game -> AbstractCharacter.getEventListeners(event.getEventType())
-                .handle(game, event))
+            .map(game -> AbstractCharacter.handle(game, event))
             .flatMap(gameService::updateGame);
     }
 
