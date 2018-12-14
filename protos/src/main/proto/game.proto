@@ -122,7 +122,7 @@ enum EventType {
 }
 
 message Event {
-  EventType eventType = 1;
+  EventType event_type = 1;
   repeated int32 candidate_targets = 2;
   repeated int32 targets = 3;
   int64 timestamp = 4;

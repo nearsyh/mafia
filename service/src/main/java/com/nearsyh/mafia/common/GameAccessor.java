@@ -5,6 +5,7 @@ import com.nearsyh.mafia.protos.CharacterIndex;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.protos.Player;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -133,6 +134,14 @@ public final class GameAccessor {
 
     public static boolean isCureUsedInThisTurn(Game game) {
         return game.getCurrentTurn().getCureCharacterIndex().getPlayerIndex() >= 0;
+    }
+
+    public static boolean hasAliveCharacterInGame(Game game, Collection<CharacterType> characterTypes) {
+        return game.getPlayersList().stream().anyMatch(
+            player -> !(player.getCharacterTop().getIsDead()
+                && characterTypes.contains(player.getCharacterTop().getCharacterType()))
+                || !(player.getCharacterBot().getIsDead()
+                && characterTypes.contains(player.getCharacterBot().getCharacterType())));
     }
 
 }

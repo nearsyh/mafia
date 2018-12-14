@@ -1,17 +1,20 @@
 package com.nearsyh.mafia.characters;
 
+import com.nearsyh.mafia.common.GameAccessor;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractCharacter implements Character {
 
     private static Map<CharacterType, Character> REGISTERED_CHARACTERS = new HashMap<>();
-    private static Map<EventType, CharacterType> EVENT_LISTENER_TYPES = new HashMap<>();
+    private static Map<EventType, Set<CharacterType>> EVENT_LISTENER_TYPES = new HashMap<>();
     private static Map<EventType, CharacterAction> EVENT_LISTENERS = new HashMap<>();
     private static Map<EventType, CharacterPreAction> PRE_EVENT_LISTENER = new HashMap<>();
 
@@ -26,7 +29,7 @@ public abstract class AbstractCharacter implements Character {
     static void registerEventListeners(EventType eventType,
         CharacterType characterType,
         CharacterAction handler) {
-        EVENT_LISTENER_TYPES.put(eventType, characterType);
+        EVENT_LISTENER_TYPES.computeIfAbsent(eventType, any -> new HashSet<>()).add(characterType);
         EVENT_LISTENERS.put(eventType, handler);
     }
 
@@ -85,11 +88,29 @@ public abstract class AbstractCharacter implements Character {
         EventType.VOTE,
         EventType.SUNSET
     );
+    private static int START_OF_DAY = PRECEDENCE.indexOf(EventType.SUNRISE);
 
     private static EventType nextEventType(Game game, Event currentEvent) {
         var currentEventType = currentEvent.getEventType();
         var currentPrecedence = PRECEDENCE.indexOf(currentEventType);
-        if (currentPrecedence > 0) {
+        if (currentPrecedence >= 0) {
+            // 白天就按部就班
+            if (currentPrecedence >= START_OF_DAY) {
+              return PRECEDENCE.get(currentPrecedence + 1);
+            }
+            // 晚上就要根据活着的角色决定.
+            for (int i = currentPrecedence + 1; i <= START_OF_DAY; i ++) {
+              var nextEventTypeCandidate = PRECEDENCE.get(i);
+              if (nextEventTypeCandidate == EventType.SUNRISE) {
+                return nextEventTypeCandidate;
+              } else {
+                  var characterTypes = EVENT_LISTENER_TYPES.get(nextEventTypeCandidate);
+                  if (characterTypes != null
+                      && GameAccessor.hasAliveCharacterInGame(game, characterTypes)) {
+                      return nextEventTypeCandidate;
+                  }
+              }
+            }
             return PRECEDENCE.get(currentPrecedence + 1);
         } else {
             switch (currentEventType) {
