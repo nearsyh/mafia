@@ -1,5 +1,8 @@
 package com.nearsyh.mafia.characters;
 
-public class Character {
+import com.nearsyh.mafia.protos.CharacterType;
 
+public interface Character {
+
+    CharacterType getCharacterType();
 }
