@@ -69,6 +69,12 @@
       <artifactId>protobuf-java-format</artifactId>
       <version>${protobuf-java-format.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.nearsyh</groupId>
+      <artifactId>protos</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>
