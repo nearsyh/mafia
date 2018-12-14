@@ -1,9 +1,11 @@
 package com.nearsyh.mafia.handlers;
 
 import com.nearsyh.mafia.characters.AbstractCharacter;
+import com.nearsyh.mafia.common.GameConstructor;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.service.GameService;
+import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +29,8 @@ public class GameManagementHandler {
     }
 
     @PutMapping("/games")
-    public Mono<Game> createGame() {
-        return gameService.createGame();
+    public Mono<Game> createGame(@RequestBody Map<String, Integer> characterCounts) {
+        return gameService.createGame(GameConstructor.constructGame(characterCounts));
     }
 
     @PostMapping("/games/{game_id}")
