@@ -26,6 +26,10 @@ public abstract class AbstractCharacter implements Character {
         return REGISTERED_CHARACTERS.get(characterType);
     }
 
+    public static Set<CharacterType> allSupportedCharacterTypes() {
+        return REGISTERED_CHARACTERS.keySet();
+    }
+
     static void registerEventListeners(EventType eventType,
         CharacterType characterType,
         CharacterAction handler) {

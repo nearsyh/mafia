@@ -2,10 +2,13 @@ package com.nearsyh.mafia.handlers;
 
 import com.nearsyh.mafia.characters.AbstractCharacter;
 import com.nearsyh.mafia.common.GameConstructor;
+import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.service.GameService;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +42,13 @@ public class GameManagementHandler {
         return gameService.getGame(gameId)
             .map(game -> AbstractCharacter.handle(game, event))
             .flatMap(gameService::updateGame);
+    }
+
+    @GetMapping("/games/support_characters")
+    public Mono<List<String>> allSupportedCharacters() {
+        return Mono.just(AbstractCharacter.allSupportedCharacterTypes().stream()
+            .map(CharacterType::name)
+            .collect(Collectors.toList()));
     }
 
 }
