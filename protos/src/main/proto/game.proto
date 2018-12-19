@@ -17,8 +17,8 @@ message TurnStatus {
   CharacterIndex toxic_character_index = 9;       // 毒死的人. 可以不毒.
   CharacterIndex verify_character_index = 10;     // 查验的人.
   int32 muted_player_index = 11;                  // 禁言的人.
-  CharacterIndex dead_characters = 12;            // 所有死了的人.
-  CharacterIndex voted_characters = 13;           // 投死的人.
+  repeated CharacterIndex dead_characters = 12;   // 所有死了的人.
+  repeated CharacterIndex voted_characters = 13;  // 投死的人.
 }
 
 message GameStatus {
@@ -41,6 +41,9 @@ message GameStatus {
   // 角色存活状态
   repeated CharacterIndex dead_characters = 7;
   repeated CharacterIndex alive_characters = 8;
+
+  // 被魅惑的人
+  repeated CharacterIndex affected_characters = 9;
 
 }
 

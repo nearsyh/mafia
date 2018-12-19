@@ -1,21 +1,26 @@
 package com.nearsyh.mafia.common;
 
+import static com.nearsyh.mafia.common.GameAccessor.NO_CHARACTER;
+import static com.nearsyh.mafia.common.GameAccessor.NO_PLAYER;
+
 import com.nearsyh.mafia.protos.Character;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.protos.Player;
+import com.nearsyh.mafia.protos.TurnStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
 public final class GameConstructor {
 
-    private GameConstructor() {}
+    private GameConstructor() {
+    }
 
     public static Game constructGame(Map<String, Integer> characterCounts) {
         var characterList = new ArrayList<CharacterType>();
         characterCounts.forEach((rawCharacterType, count) -> {
-            for (int i = 0; i < count; i ++) {
+            for (int i = 0; i < count; i++) {
                 characterList.add(CharacterType.valueOf(rawCharacterType));
             }
         });
@@ -36,6 +41,24 @@ public final class GameConstructor {
 
         return Game.newBuilder()
             .addAllPlayers(players)
+            .build();
+    }
+
+    public static TurnStatus constructInitialTurnStatus() {
+        return TurnStatus.newBuilder()
+            .setFrozenPlayerIndex(NO_PLAYER)
+            .setToastPlayerIndex(NO_PLAYER)
+            .setInjectionCharacterIndex(NO_CHARACTER)
+            .setGuardCharacterIndex(NO_CHARACTER)
+            .setKillCharacterIndex(NO_CHARACTER)
+            .clearHasAffection()
+            .setAffectedCharacter(NO_CHARACTER)
+            .setCureCharacterIndex(NO_CHARACTER)
+            .setToxicCharacterIndex(NO_CHARACTER)
+            .setVerifyCharacterIndex(NO_CHARACTER)
+            .setMutedPlayerIndex(NO_PLAYER)
+            .clearDeadCharacters()
+            .clearVotedCharacters()
             .build();
     }
 }

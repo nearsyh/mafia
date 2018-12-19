@@ -6,13 +6,19 @@ import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.protos.Player;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class GameAccessor {
 
     public static final int NO_PLAYER = -1;
+    public static final CharacterIndex NO_CHARACTER = CharacterIndex.newBuilder()
+        .setPlayerIndex(NO_PLAYER).build();
+    public static final int TOP_CHARACTER = 0;
+    public static final int BOT_CHARACTER = 1;
 
     private GameAccessor() {
     }
@@ -26,6 +32,25 @@ public final class GameAccessor {
 
     public static boolean isPlayerAlive(Player player) {
         return !player.getCharacterTop().getIsDead() || !player.getCharacterBot().getIsDead();
+    }
+
+    public static Character getCharacter(Game game, CharacterIndex characterIndex) {
+        var player = game.getPlayers(characterIndex.getPlayerIndex());
+        return characterIndex.getCharacterIndex() == 0
+            ? player.getCharacterTop()
+            : player.getCharacterBot();
+    }
+
+    public static Optional<Character> getCurrentAliveCharacter(Game game,
+        int playerIndex) {
+        if (playerIndex < 0 || playerIndex >= game.getPlayersCount()) {
+            return Optional.empty();
+        }
+        var player = game.getPlayers(playerIndex);
+        var character = !player.getCharacterTop().getIsDead() ? player.getCharacterTop()
+            : !player.getCharacterBot().getIsDead() ? player.getCharacterBot()
+                : null;
+        return Optional.ofNullable(character);
     }
 
     public static Optional<CharacterIndex> getCurrentAliveCharacterIndex(Game game,
@@ -136,11 +161,144 @@ public final class GameAccessor {
         return game.getCurrentTurn().getCureCharacterIndex().getPlayerIndex() >= 0;
     }
 
-    public static boolean hasAliveCharacterInGame(Game game, Collection<CharacterType> characterTypes) {
+    public static boolean hasAliveCharacterInGame(Game game,
+        Collection<CharacterType> characterTypes) {
         return game.getPlayersList().stream().anyMatch(
             player -> !(player.getCharacterTop().getIsDead()
                 && characterTypes.contains(player.getCharacterTop().getCharacterType()))
                 || !(player.getCharacterBot().getIsDead()
                 && characterTypes.contains(player.getCharacterBot().getCharacterType())));
+    }
+
+    public static int getPlayerOfType(Game game, CharacterType characterType) {
+        return game.getPlayersList().stream()
+            .filter(player -> doesPlayerHasThisCharacter(game, player.getIndex(), characterType))
+            .findFirst()
+            .map(Player::getIndex)
+            .orElse(NO_PLAYER);
+    }
+
+    public static boolean isPlayerActuallyKilledThisTurn(Game game, int playerIndex) {
+        var currentTurn = game.getCurrentTurn();
+        if (!isPlayerActuallyKilledThisTurnForWitch(game, playerIndex)) {
+            return false;
+        }
+        return currentTurn.getCureCharacterIndex().getPlayerIndex() != playerIndex
+            && currentTurn.getInjectionCharacterIndex().getPlayerIndex() != playerIndex;
+    }
+
+    public static boolean isPlayerSavedThisTurn(Game game, int playerIndex) {
+        if (playerIndex < 0) {
+            return false;
+        }
+        var currentTurn = game.getCurrentTurn();
+        return currentTurn.getCureCharacterIndex().getPlayerIndex() == playerIndex
+            || currentTurn.getInjectionCharacterIndex().getPlayerIndex() == playerIndex
+            || currentTurn.getFrozenPlayerIndex() == playerIndex;
+    }
+
+    public static int getPlayerInjectionCount(Game game, int playerIndex) {
+        return getCurrentAliveCharacter(game, playerIndex)
+            .map(Character::getInjectionCount)
+            .orElse(0);
+    }
+
+    public static Game increasePlayerInjectionCount(Game game, int playerIndex) {
+        if (playerIndex < 0) {
+            return game;
+        }
+        var player = game.getPlayers(playerIndex);
+        var playerBuilder = player.toBuilder();
+        if (!player.getCharacterTop().getIsDead()) {
+            playerBuilder.setCharacterTop(player.getCharacterTop().toBuilder()
+                .setInjectionCount(player.getCharacterTop().getInjectionCount() + 1));
+        } else if (!player.getCharacterBot().getIsDead()) {
+            playerBuilder.setCharacterBot(player.getCharacterBot().toBuilder()
+                .setInjectionCount(player.getCharacterBot().getInjectionCount() + 1));
+        }
+        return game.toBuilder()
+            .setPlayers(playerIndex, playerBuilder)
+            .build();
+    }
+
+    public static boolean doesPlayerHasThisCharacter(Game game, int playerIndex,
+        CharacterType characterType) {
+        if (playerIndex < 0) {
+            return false;
+        }
+        var player = game.getPlayers(playerIndex);
+        return player.getCharacterTop().getCharacterType().equals(characterType)
+            || player.getCharacterBot().getCharacterType().equals(characterType);
+    }
+
+    public static Game markCharacterAsDead(Game game, Collection<CharacterIndex> characterIndices) {
+        var builder = game.toBuilder();
+        var deadMap = characterIndices.stream()
+            .collect(Collectors.groupingBy(CharacterIndex::getPlayerIndex));
+        deadMap.forEach((playerIndex, characters) -> {
+            var playerBuilder = game.getPlayers(playerIndex).toBuilder();
+            characters.forEach(characterIndex -> {
+                if (characterIndex.getCharacterIndex() == BOT_CHARACTER) {
+                    playerBuilder.setCharacterBot(
+                        game.getPlayers(playerIndex).getCharacterBot().toBuilder().setIsDead(true));
+                }
+                if (characterIndex.getCharacterIndex() == TOP_CHARACTER) {
+                    playerBuilder.setCharacterTop(
+                        game.getPlayers(playerIndex).getCharacterTop().toBuilder().setIsDead(true));
+                }
+            });
+            builder.setPlayers(playerIndex, playerBuilder);
+        });
+        return builder.build();
+    }
+
+    public static Set<CharacterIndex> getAllDeadCharacters(Game game,
+        Set<CharacterIndex> originalDeadCharacters) {
+        var gameStatus = game.getGameStatus();
+        var deadCharacters = new HashSet<>(originalDeadCharacters);
+        // 被连带弄死的人
+        int currentSize = 0;
+        while (deadCharacters.size() != currentSize) {
+            currentSize = deadCharacters.size();
+            var newDeadCharacters = new HashSet<CharacterIndex>();
+            for (CharacterIndex characterIndex : deadCharacters) {
+                var deadCharacter = GameAccessor.getCharacter(game, characterIndex);
+                // 狼美人
+                if (deadCharacter.getCharacterType() == CharacterType.WOLF_BEAUTY) {
+                    newDeadCharacters.addAll(gameStatus.getAffectedCharactersList());
+                }
+
+                // 死透了
+                var deadPlayerIndex = characterIndex.getPlayerIndex();
+                if (characterIndex.getCharacterIndex() == BOT_CHARACTER) {
+                    // 魅狼死了
+                    if (GameAccessor.doesPlayerHasThisCharacter(game, deadPlayerIndex,
+                        CharacterType.SUCCUBUS)) {
+                        var characterIndexBuilder = CharacterIndex.newBuilder()
+                            .setPlayerIndex(gameStatus.getLoverIndex());
+                        newDeadCharacters
+                            .add(characterIndexBuilder.setCharacterIndex(BOT_CHARACTER).build());
+                        newDeadCharacters
+                            .add(characterIndexBuilder.setCharacterIndex(TOP_CHARACTER).build());
+                    }
+                    // 被连着的人死了
+                    if (deadPlayerIndex == gameStatus.getLoverIndex()) {
+                        var succubusPlayerIndex = GameAccessor
+                            .getPlayerOfType(game, CharacterType.SUCCUBUS);
+                        var characterIndexBuilder = CharacterIndex.newBuilder()
+                            .setPlayerIndex(succubusPlayerIndex);
+                        newDeadCharacters
+                            .add(characterIndexBuilder.setCharacterIndex(BOT_CHARACTER).build());
+                        newDeadCharacters
+                            .add(characterIndexBuilder.setCharacterIndex(TOP_CHARACTER).build());
+                    }
+                }
+
+                newDeadCharacters.stream()
+                    .filter(c -> !gameStatus.getDeadCharactersList().contains(c))
+                    .forEach(deadCharacters::add);
+            }
+        }
+        return deadCharacters;
     }
 }

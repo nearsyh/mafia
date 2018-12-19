@@ -28,7 +28,7 @@ public class InMemoryGameService implements GameService {
 
     @Override
     public Mono<Game> updateGame(Game game) {
-        game = GAME_MAP.put(game.getId(), game);
+        GAME_MAP.put(game.getId(), game);
         return Mono.justOrEmpty(game);
     }
 }

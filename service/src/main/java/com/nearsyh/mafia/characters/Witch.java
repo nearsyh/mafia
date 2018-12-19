@@ -2,14 +2,15 @@ package com.nearsyh.mafia.characters;
 
 import static com.nearsyh.mafia.common.GameAccessor.NO_PLAYER;
 
-import com.google.common.base.Preconditions;
 import com.nearsyh.mafia.common.GameAccessor;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
 import java.util.HashSet;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Witch extends AbstractCharacter implements Character {
 
     private static final Witch INSTANCE = new Witch();
@@ -35,7 +36,7 @@ public class Witch extends AbstractCharacter implements Character {
         candidatePlayers.add(NO_PLAYER);
         if (game.getGameStatus().getIsCureUsed()) {
             message += " (用过了)";
-        } else {
+        } else if (isPlayerKilledForWitch) {
             candidatePlayers.add(killedPlayerIndex);
         }
         return nextEventBuilder.clearCandidateTargets()

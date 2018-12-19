@@ -8,7 +8,9 @@ import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
 import java.util.HashSet;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Guardian extends AbstractCharacter implements Character {
 
     private static final Guardian INSTANCE = new Guardian();
