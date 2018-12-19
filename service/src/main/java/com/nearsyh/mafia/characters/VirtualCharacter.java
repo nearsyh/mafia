@@ -165,6 +165,9 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
         var newDeadCharacterIndices = GameAccessor
             .getAllDeadCharacters(game, votedCharacterIndices);
 
+        // 更新 Character 的 Dead 字段
+        GameAccessor.markCharacterAsDead(game, newDeadCharacterIndices);
+
         var currentTurnBuilder = game.getCurrentTurn().toBuilder()
             .clearVotedCharacters()
             .addAllVotedCharacters(votedCharacterIndices)

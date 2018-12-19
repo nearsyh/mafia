@@ -9,15 +9,19 @@ import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
 import java.util.HashSet;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 
 @Component
 public final class Werewolf extends AbstractCharacter implements Character {
 
     private static final Werewolf INSTANCE = new Werewolf();
+
     static {
         registerEventListeners(EventType.KILL, INSTANCE.getCharacterType(), INSTANCE::kill);
         registerPreEventListeners(EventType.KILL, INSTANCE::preKill);
+
+        registerEventListeners(EventType.CONFESS, INSTANCE.getCharacterType(), INSTANCE::confess);
     }
 
     private Werewolf() {
@@ -52,6 +56,25 @@ public final class Werewolf extends AbstractCharacter implements Character {
             .ifPresent(currentTurn::setKillCharacterIndex);
         return game.toBuilder()
             .setCurrentTurn(currentTurn)
+            .build();
+    }
+
+    private Game confess(Game game, Event event) {
+        Preconditions.checkArgument(event.getEventType() == EventType.CONFESS);
+        Preconditions.checkArgument(event.getTargetsCount() == 1);
+        var confessPlayerIndex = event.getTargets(0);
+        Preconditions.checkArgument(confessPlayerIndex >= 0);
+
+        var character = GameAccessor.getCurrentAliveCharacterIndex(game, confessPlayerIndex)
+            .get();
+        var newDeadCharacters = GameAccessor.getAllDeadCharacters(game, Set.of(character));
+
+        game = GameAccessor.markCharacterAsDead(game, newDeadCharacters);
+
+        return game.toBuilder()
+            .setCurrentTurn(
+                game.getCurrentTurn().toBuilder().addAllDeadCharacters(newDeadCharacters))
+            .setGameStatus(game.getGameStatus().toBuilder().addAllDeadCharacters(newDeadCharacters))
             .build();
     }
 }
