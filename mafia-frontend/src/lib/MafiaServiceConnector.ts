@@ -17,7 +17,7 @@ export async function getSupportedCharacterTypes() {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    }
+    },
   });
   return response.data;
 }
@@ -26,7 +26,7 @@ export async function createGame(charactersCount: Map<string, number>) {
   const response = await axios.put<Uint8Array>(`/games/support_characters`, charactersCount, {
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
   return Game.deserializeBinary(response.data);
 }
