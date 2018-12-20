@@ -3,20 +3,18 @@
     <div class='player-container container-fluid row'>
       <div v-for='(characterReadableName, index) of characterReadableNames' class='half' :key='index'>
         <div class='player-view card'>
-          <div class='card-body' @click="select(index)">
+          <div class='card-body' @click="select(index)"
+            :class='{candidate: candidatePlayersIndex.includes(index),
+                     selected: selected === index}'>
             <h6 class="card-title">{{ index + 1 }} 号玩家</h6>
             <p class="card-text" 
               :class='{dead: characterCurrentEffectiveIndex[index] > 0,
-                       effective: characterCurrentEffectiveIndex[index] === 0,
-                       candidate: characterCurrentEffectiveIndex[index] === 0
-                               && candidatePlayersIndex.includes(index) }'>
+                       effective: characterCurrentEffectiveIndex[index] === 0}'>
               {{ characterReadableName[0] }}
             </p>
             <p class="card-text"
               :class='{dead: characterCurrentEffectiveIndex[index] > 1,
-                       effective: characterCurrentEffectiveIndex[index] === 1,
-                       candidate: characterCurrentEffectiveIndex[index] === 1
-                               && candidatePlayersIndex.includes(index) }'>
+                       effective: characterCurrentEffectiveIndex[index] === 1}'>
               {{ characterReadableName[1] }}
             </p>
           </div>
@@ -28,6 +26,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import { NO_PLAYER } from '@/lib/MafiaConstants';
 
 @Component
 export default class Table extends Vue {
@@ -41,8 +40,17 @@ export default class Table extends Vue {
   @Prop()
   private candidatePlayersIndex!: number[];
 
-  @Emit('select')
+  @Prop()
+  private selected!: number;
+
   private select(index: number) {
+    if (this.candidatePlayersIndex.includes(index)) {
+      this.emit(index);
+    }
+  }
+
+  @Emit('select')
+  private emit(index: number) {
     return index;
   }
 
@@ -63,6 +71,10 @@ export default class Table extends Vue {
 }
 
 .candidate {
+  background-color: aquamarine;
+}
+
+.selected {
   background-color: green;
 }
 

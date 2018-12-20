@@ -61,9 +61,6 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
     }
 
     private Game sunrise(Game game, Event event) {
-        var currentTurnBuilder = game.getCurrentTurn().toBuilder();
-        var gameStatus = game.getGameStatus();
-        var gameStatusBuilder = gameStatus.toBuilder();
         Set<CharacterIndex> deadCharacters = new HashSet<CharacterIndex>();
 
         // 被杀的角色
@@ -95,11 +92,12 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
             }
         }
         deadCharacters = GameAccessor.getAllDeadCharacters(game, deadCharacters);
-        gameStatusBuilder.addAllDeadCharacters(deadCharacters);
-        currentTurnBuilder.clearDeadCharacters().addAllDeadCharacters(deadCharacters);
-
         // 更新 Character 的 Dead 字段
         game = GameAccessor.markCharacterAsDead(game, deadCharacters);
+        var gameStatusBuilder = game.getGameStatus().toBuilder();
+        gameStatusBuilder.addAllDeadCharacters(deadCharacters);
+        var currentTurnBuilder = game.getCurrentTurn().toBuilder();
+        currentTurnBuilder.clearDeadCharacters().addAllDeadCharacters(deadCharacters);
 
         return game.toBuilder()
             .setCurrentTurn(currentTurnBuilder)

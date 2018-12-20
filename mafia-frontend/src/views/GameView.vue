@@ -4,13 +4,14 @@
     <Table :characterReadableNames='characterReadableNames'
            :characterCurrentEffectiveIndex='characterCurrentEffectiveIndex'
            :candidatePlayersIndex='candidatePlayersIndex'
+           :selected='selectedIndex'
            v-on:select='select'></Table>
     <p v-if='lastTurnMessage'>{{ lastTurnMessage }}</p>
     <p v-if='nextTurnMessage'>{{ nextTurnMessage }}</p>
     <button type="button" class="btn btn-success btn-block"
       @click='nextStep'
       :disabled='!ready'>
-      下一步
+      {{ ready ? "下一步" : "需要选一个角色" }}
     </button>
 
     <button type="button" class="btn btn-danger btn-block"
@@ -87,12 +88,16 @@ export default class GameView extends Vue {
   }
 
   private select(index: number) {
-    this.selectedIndex = index;
+    if (this.selectedIndex === index) {
+      this.selectedIndex = NO_PLAYER;
+    } else {
+      this.selectedIndex = index;
+    }
   }
 
   private get ready() {
-    return this.candidatePlayersIndex.length === 0
-        || this.candidatePlayersIndex.includes(this.selectedIndex);
+    return !this.isInConfess && (this.candidatePlayersIndex.length === 0
+         || this.candidatePlayersIndex.includes(this.selectedIndex));
   }
 
   private async nextStep() {

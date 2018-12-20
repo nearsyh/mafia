@@ -170,7 +170,7 @@ public final class GameAccessor {
     }
 
     public static boolean isPlayerActuallyKilledThisTurnForWitch(Game game, int playerIndex) {
-        if (playerIndex < 0) {
+        if (playerIndex < 0 || playerIndex > game.getPlayersCount()) {
             return false;
         }
         var currentTurn = game.getCurrentTurn();
