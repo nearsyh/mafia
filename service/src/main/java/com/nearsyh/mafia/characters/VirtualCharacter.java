@@ -68,14 +68,16 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
 
         // 被杀的角色
         var killedCharacterIndex = game.getCurrentTurn().getKillCharacterIndex();
-        if (GameAccessor
+        if (killedCharacterIndex.getPlayerIndex() >= 0
+            && GameAccessor
             .isPlayerActuallyKilledThisTurn(game, killedCharacterIndex.getPlayerIndex())) {
             deadCharacters.add(killedCharacterIndex);
         }
         // 被毒死的角色
         var toxicCharacterIndex = game.getCurrentTurn().getToxicCharacterIndex();
         // TODO: 被毒能被针救吗?
-        if (!GameAccessor.isPlayerSavedThisTurn(game, toxicCharacterIndex.getPlayerIndex())) {
+        if (toxicCharacterIndex.getPlayerIndex() >= 0
+            && !GameAccessor.isPlayerSavedThisTurn(game, toxicCharacterIndex.getPlayerIndex())) {
             deadCharacters.add(toxicCharacterIndex);
         }
 
@@ -97,7 +99,7 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
         currentTurnBuilder.clearDeadCharacters().addAllDeadCharacters(deadCharacters);
 
         // 更新 Character 的 Dead 字段
-        GameAccessor.markCharacterAsDead(game, deadCharacters);
+        game = GameAccessor.markCharacterAsDead(game, deadCharacters);
 
         return game.toBuilder()
             .setCurrentTurn(currentTurnBuilder)
@@ -130,7 +132,7 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
         String message = "";
         if (lastDeadCharacter == null) {
             message += String.format(
-                "(先说遗言, 如果有的话) 从 %s 号玩家开始发言.", ascOrder ? 1 : game.getPlayersCount() + 1);
+                "(先说遗言, 如果有的话) 从 %s 号玩家开始发言.", ascOrder ? 1 : game.getPlayersCount());
 
         } else {
             message += String.format(
@@ -166,17 +168,18 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
             .getAllDeadCharacters(game, votedCharacterIndices);
 
         // 更新 Character 的 Dead 字段
-        GameAccessor.markCharacterAsDead(game, newDeadCharacterIndices);
+        var updatedGame = GameAccessor.markCharacterAsDead(game, newDeadCharacterIndices);
 
-        var currentTurnBuilder = game.getCurrentTurn().toBuilder()
+        var currentTurnBuilder = updatedGame.getCurrentTurn().toBuilder()
             .clearVotedCharacters()
             .addAllVotedCharacters(votedCharacterIndices)
             .addAllDeadCharacters(newDeadCharacterIndices);
 
-        return game.toBuilder()
+        return updatedGame.toBuilder()
             .setCurrentTurn(currentTurnBuilder)
             .setGameStatus(
-                game.getGameStatus().toBuilder().addAllDeadCharacters(newDeadCharacterIndices))
+                updatedGame.getGameStatus().toBuilder()
+                    .addAllDeadCharacters(newDeadCharacterIndices))
             .build();
     }
 }

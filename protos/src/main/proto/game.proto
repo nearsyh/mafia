@@ -45,6 +45,8 @@ message GameStatus {
   // 被魅惑的人
   repeated CharacterIndex affected_characters = 9;
 
+  // 在明面上的狼
+  repeated int32 on_surface_wolves = 10;
 }
 
 message Game {

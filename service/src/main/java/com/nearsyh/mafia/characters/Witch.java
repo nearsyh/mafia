@@ -27,6 +27,13 @@ public class Witch extends AbstractCharacter implements Character {
     }
 
     public Event.Builder preCure(Game game, Event.Builder nextEventBuilder) {
+        var isOnTop = GameAccessor.isCharacterTypeOnSurface(game, CharacterType.WITCH);
+        if (!isOnTop) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse("今晚死的人是 TA, 你有一瓶解药要救吗? (不在当前第一张牌, 直接下一步)")
+                .addCandidateTargets(NO_PLAYER);
+        }
+
         var killedPlayerIndex = game.getCurrentTurn().getKillCharacterIndex().getPlayerIndex();
         var isPlayerKilledForWitch =
             GameAccessor.isPlayerActuallyKilledThisTurnForWitch(game, killedPlayerIndex);
@@ -57,6 +64,13 @@ public class Witch extends AbstractCharacter implements Character {
     }
 
     public Event.Builder preToxic(Game game, Event.Builder nextEventBuilder) {
+        var isOnTop = GameAccessor.isCharacterTypeOnSurface(game, CharacterType.WITCH);
+        if (!isOnTop) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse("你有一瓶毒药要用吗? (不在当前第一张牌, 直接下一步)")
+                .addCandidateTargets(NO_PLAYER);
+        }
+
         var message = "你有一瓶毒药要用吗?";
         var candidatePlayers = new HashSet<Integer>();
         candidatePlayers.add(NO_PLAYER);

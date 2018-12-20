@@ -64,3 +64,5 @@ export function fromEnumName(enumName: string) {
 export function toEnumName(characterType: CharacterType) {
   return getFromMap(characterType, 'CHARACTER_TYPE_UNSPECIFIED', ENUM_NAME_MAP);
 }
+
+export const NO_PLAYER = -1;

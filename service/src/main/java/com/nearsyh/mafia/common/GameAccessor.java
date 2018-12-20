@@ -23,6 +23,30 @@ public final class GameAccessor {
     private GameAccessor() {
     }
 
+    public static boolean isCharacterTypeOnSurface(Game game, CharacterType characterType) {
+        return game.getPlayersList().stream().anyMatch(
+            player -> {
+                if (!player.getCharacterTop().getIsDead()) {
+                    return player.getCharacterTop().getCharacterType() == characterType;
+                } else if (!player.getCharacterBot().getIsDead()) {
+                    return player.getCharacterBot().getCharacterType() == characterType;
+                }
+                return false;
+            });
+    }
+
+    public static boolean hasWolvesOnSurface(Game game) {
+        return game.getPlayersList().stream().anyMatch(
+            player -> {
+                if (!player.getCharacterTop().getIsDead()) {
+                    return isWolf(game, player.getCharacterTop());
+                } else if (!player.getCharacterBot().getIsDead()) {
+                    return isWolf(game, player.getCharacterBot());
+                }
+                return false;
+            });
+    }
+
     public static boolean isPlayerAlive(Game game, int playerIndex) {
         if (playerIndex < 0 || playerIndex >= game.getPlayersCount()) {
             return false;
@@ -68,14 +92,25 @@ public final class GameAccessor {
         return Optional.ofNullable(characterIndexBuilder).map(CharacterIndex.Builder::build);
     }
 
-    private static boolean isWolf(Character character) {
+    private static boolean isWolf(Game game, Character character) {
         var characterType = character.getCharacterType();
         return characterType == CharacterType.WEREWOLF
-            || characterType == CharacterType.WOLF_BEAUTY;
+            || characterType == CharacterType.WOLF_BEAUTY
+            || (characterType == CharacterType.WOLF_CHILD && !isPlayerAlive(game,
+            game.getGameStatus().getIdolIndex()));
     }
 
-    private static boolean isWolfOrSuccubus(Character character) {
-        return character.getCharacterType() == CharacterType.SUCCUBUS || isWolf(character);
+    private static boolean isWolfOnSurface(Game game, Player player) {
+        if (!player.getCharacterTop().getIsDead()) {
+            return isWolf(game, player.getCharacterTop());
+        } else if (!player.getCharacterBot().getIsDead()) {
+            return isWolf(game, player.getCharacterBot());
+        }
+        return false;
+    }
+
+    private static boolean isWolfOrSuccubus(Game game, Character character) {
+        return character.getCharacterType() == CharacterType.SUCCUBUS || isWolf(game, character);
     }
 
     public static boolean doesPlayerSeemBad(Game game, int playerIndex) {
@@ -90,31 +125,26 @@ public final class GameAccessor {
             switch (player.getCharacterTop().getCharacterType()) {
                 case WEREWOLF:
                 case WOLF_BEAUTY:
-                    return !isWolfOrSuccubus(player.getCharacterBot());
+                    return !isWolfOrSuccubus(game, player.getCharacterBot());
                 case WOLF_CHILD:
                     if (isPlayerAlive(game, game.getGameStatus().getIdolIndex())) {
                         return false;
                     }
-                    return !isWolfOrSuccubus(player.getCharacterBot());
+                    return !isWolfOrSuccubus(game, player.getCharacterBot());
                 default:
                     return false;
             }
         } else if (!player.getCharacterBot().getIsDead()) {
-            switch (player.getCharacterTop().getCharacterType()) {
-                case WEREWOLF:
-                case WOLF_BEAUTY:
-                    return true;
-                case WOLF_CHILD:
-                    return !isPlayerAlive(game, game.getGameStatus().getIdolIndex());
-                default:
-                    return false;
-            }
+            return isWolf(game, player.getCharacterBot());
         }
         return false;
     }
 
     public static int noKillNightsCount(Game game) {
         int count = 0;
+        if (game.getTurnId() == 1) {
+            return 0;
+        }
         for (int i = game.getPastTurnsCount() - 1; i >= 0; i--) {
             if (game.getPastTurns(i).getKillCharacterIndex().getPlayerIndex() < 0) {
                 count += 1;
@@ -147,11 +177,11 @@ public final class GameAccessor {
         if (currentTurn.getKillCharacterIndex().getPlayerIndex() != playerIndex) {
             return false;
         }
-        if (currentTurn.getGuardCharacterIndex().getPlayerIndex() != playerIndex) {
+        if (currentTurn.getGuardCharacterIndex().getPlayerIndex() == playerIndex) {
             return false;
         }
         // TODO
-        if (currentTurn.getFrozenPlayerIndex() != playerIndex) {
+        if (currentTurn.getFrozenPlayerIndex() == playerIndex) {
             return false;
         }
         return true;
@@ -232,6 +262,7 @@ public final class GameAccessor {
     }
 
     public static Game markCharacterAsDead(Game game, Collection<CharacterIndex> characterIndices) {
+        var gameStatusBuilder = game.getGameStatus().toBuilder();
         var builder = game.toBuilder();
         var deadMap = characterIndices.stream()
             .collect(Collectors.groupingBy(CharacterIndex::getPlayerIndex));
@@ -249,7 +280,13 @@ public final class GameAccessor {
             });
             builder.setPlayers(playerIndex, playerBuilder);
         });
-        return builder.build();
+        var tmpGame = builder.build();
+        gameStatusBuilder.clearOnSurfaceWolves()
+            .addAllOnSurfaceWolves(tmpGame.getPlayersList().stream()
+            .filter(player -> isWolfOnSurface(tmpGame, player))
+            .map(Player::getIndex)
+            .collect(Collectors.toList()));
+        return builder.setGameStatus(gameStatusBuilder).build();
     }
 
     public static Set<CharacterIndex> getAllDeadCharacters(Game game,

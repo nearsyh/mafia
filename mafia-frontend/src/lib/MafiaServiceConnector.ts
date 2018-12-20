@@ -24,7 +24,9 @@ export async function getSupportedCharacterTypes() {
 }
 
 export async function createGame(charactersCount: Map<string, number>) {
-  const response = await axios.put<Uint8Array>(`/games/support_characters`, charactersCount, {
+  const payload: any = {};
+  charactersCount.forEach((v, k) => payload[k] = v);
+  const response = await axios.put<Uint8Array>(`/games`, payload, {
     headers: {
       'Content-Type': 'application/json',
     },

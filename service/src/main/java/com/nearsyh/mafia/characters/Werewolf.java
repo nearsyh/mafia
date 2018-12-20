@@ -4,6 +4,7 @@ import static com.nearsyh.mafia.common.GameAccessor.NO_PLAYER;
 
 import com.google.common.base.Preconditions;
 import com.nearsyh.mafia.common.GameAccessor;
+import com.nearsyh.mafia.protos.CharacterIndex;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
@@ -29,14 +30,20 @@ public final class Werewolf extends AbstractCharacter implements Character {
     }
 
     private Event.Builder preKill(Game game, Event.Builder nextEventBuilder) {
+        var isOnTop = GameAccessor.hasWolvesOnSurface(game);
         var candidatePlayers = new HashSet<>(GameAccessor.allAlivePlayersIndex(game));
         var noKillNightsCount = GameAccessor.noKillNightsCount(game);
         var message = "狼人睁眼杀人.";
-        if (noKillNightsCount < 3) {
-            candidatePlayers.add(NO_PLAYER);
-            message += " (今晚可以不杀)";
+        if (isOnTop) {
+            if (noKillNightsCount < 3) {
+                candidatePlayers.add(NO_PLAYER);
+                message += String.format(" (%s晚没杀人, 今晚可以不杀)", noKillNightsCount);
+            } else {
+                message += " (3晚没杀人了, 必须杀)";
+            }
         } else {
-            message += " (3晚没杀人了, 必须杀)";
+            candidatePlayers.add(NO_PLAYER);
+            message += " (没有普通狼在上面, 今晚可以不杀)";
         }
         return nextEventBuilder.clearCandidateTargets()
             .setCurrentEventResponse(message)
@@ -46,14 +53,14 @@ public final class Werewolf extends AbstractCharacter implements Character {
     private Game kill(Game game, Event event) {
         Preconditions.checkArgument(event.getEventType() == EventType.KILL);
         var currentTurn = game.getCurrentTurn().toBuilder();
-        var noKillNightsCount = GameAccessor.noKillNightsCount(game);
-        var playerIndexToKill = event.getTargets(0);
-        Preconditions.checkArgument(noKillNightsCount <= 3, "好几晚没杀人了");
-        if (noKillNightsCount >= 3) {
-            Preconditions.checkArgument(playerIndexToKill >= 0, "好几晚没杀人了");
+        var isOnTop = GameAccessor.hasWolvesOnSurface(game);
+        if (!isOnTop && event.getTargets(0) == -1) {
+            currentTurn.setKillCharacterIndex(
+                CharacterIndex.newBuilder().setPlayerIndex(Integer.MAX_VALUE));
+        } else {
+            GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
+                .ifPresent(currentTurn::setKillCharacterIndex);
         }
-        GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
-            .ifPresent(currentTurn::setKillCharacterIndex);
         return game.toBuilder()
             .setCurrentTurn(currentTurn)
             .build();

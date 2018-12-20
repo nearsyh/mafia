@@ -5,9 +5,12 @@ import static com.nearsyh.mafia.common.GameAccessor.NO_PLAYER;
 
 import com.nearsyh.mafia.protos.Character;
 import com.nearsyh.mafia.protos.CharacterType;
+import com.nearsyh.mafia.protos.Event;
+import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.protos.Player;
 import com.nearsyh.mafia.protos.TurnStatus;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -41,6 +44,12 @@ public final class GameConstructor {
 
         return Game.newBuilder()
             .addAllPlayers(players)
+            .setCurrentTurn(constructInitialTurnStatus())
+            .setNextEvent(Event.newBuilder()
+                .setCurrentEventResponse("天黑请闭眼")
+                .setEventType(EventType.SUNSET)
+                .setTimestamp(Instant.now().toEpochMilli())
+                .build())
             .build();
     }
 

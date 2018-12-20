@@ -19,9 +19,9 @@
           </option>
         </select>
         <input v-model.number='charactersCount[index]' type='number' class='form-control'
-          :class='{disabled: index === 0}'>
+          :class='{disabled: index <= 3}'>
         <button style='float:left' class="btn btn-danger"
-          :disabled='index === 0'
+          :disabled='index <= 3'
           v-on:click='deleteCharacterType(index)'>
           删除
         </button>
@@ -62,8 +62,16 @@ export default class Start extends Vue {
   }
 
   private updatePlayersNumber() {
-    this.usedCharacters = [toReadableName(CharacterType.NORMAL_VILLAGER)];
-    this.charactersCount = [this.playersNumber];
+    this.usedCharacters = [
+      toReadableName(CharacterType.NORMAL_VILLAGER),
+      toReadableName(CharacterType.SEER),
+      toReadableName(CharacterType.WITCH),
+      toReadableName(CharacterType.GUARDIAN)];
+    this.charactersCount = [
+      this.playersNumber,
+      1,
+      1,
+      1];
   }
 
   private deleteCharacterType(index: number) {

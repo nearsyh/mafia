@@ -25,6 +25,12 @@ public class Guardian extends AbstractCharacter implements Character {
     }
 
     private Event.Builder preGuard(Game game, Event.Builder nextEventBuilder) {
+        var isOnTop = GameAccessor.isCharacterTypeOnSurface(game, CharacterType.GUARDIAN);
+        if (!isOnTop) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse("守卫请睁眼选择一个人守护 (不再上面, 直接下一步)")
+                .addCandidateTargets(NO_PLAYER);
+        }
         var lastGuardedPlayer = GameAccessor.lastGuardedPlayer(game);
         var candidatePlayers = new HashSet<>(GameAccessor.allAlivePlayersIndex(game));
         candidatePlayers.remove(lastGuardedPlayer);

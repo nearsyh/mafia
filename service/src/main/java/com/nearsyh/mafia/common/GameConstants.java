@@ -39,6 +39,6 @@ public final class GameConstants {
         var characterType =
             characterIndex.getCharacterIndex() == BOT_CHARACTER ? player.getCharacterBot()
                 .getCharacterType() : player.getCharacterTop().getCharacterType();
-        return String.format("%s号玩家(%s)", player.getIndex(), toReadableName(characterType));
+        return String.format("%s号玩家(%s)", player.getIndex() + 1, toReadableName(characterType));
     }
 }
