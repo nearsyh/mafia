@@ -1,11 +1,11 @@
 import { CharacterType } from '@/protos/game_pb';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
-function getFromMap<K, V> (k: K, defaultV: V, map: Map<K, V>): V {
+function getFromMap<K, V>(k: K, defaultV: V, map: Map<K, V>): V {
   return map.has(k) ? map.get(k)! : defaultV;
 }
 
-const READABLE_NAME_PAIRS: Array<[CharacterType, string]> = 
+const READABLE_NAME_PAIRS: Array<[CharacterType, string]> =
   [[CharacterType.NORMAL_VILLAGER, '普通村民'],
    [CharacterType.WEREWOLF, '狼人'],
    [CharacterType.SEER, '预言家'],
@@ -35,7 +35,7 @@ export function toReadableName(characterType: CharacterType) {
   return getFromMap(characterType, '未知角色', READABLE_NAME_MAP);
 }
 
-const ENUM_NAME_PAIRS: Array<[CharacterType, string]> = 
+const ENUM_NAME_PAIRS: Array<[CharacterType, string]> =
   [[CharacterType.NORMAL_VILLAGER, 'NORMAL_VILLAGER'],
    [CharacterType.WEREWOLF, 'WEREWOLF'],
    [CharacterType.SEER, 'SEER'],
