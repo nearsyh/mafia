@@ -1,6 +1,7 @@
 package com.nearsyh.mafia.handlers;
 
 import com.nearsyh.mafia.characters.AbstractCharacter;
+import com.nearsyh.mafia.common.GameAccessor;
 import com.nearsyh.mafia.common.GameConstructor;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -41,6 +43,15 @@ public class GameManagementHandler {
         @PathVariable("game_id") String gameId, @RequestBody Event event) {
         return gameService.getGame(gameId)
             .map(game -> AbstractCharacter.handle(game, event))
+            .flatMap(gameService::updateGame);
+    }
+
+    @PostMapping("/games/{game_id}/swap")
+    public Mono<Game> swap(
+        @PathVariable("game_id") String gameId, @RequestParam("player_index") int playerIndex,
+        @RequestBody Map<String, Integer> any) {
+        return gameService.getGame(gameId)
+            .map(game -> GameAccessor.swapPlayer(game, playerIndex))
             .flatMap(gameService::updateGame);
     }
 

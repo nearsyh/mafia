@@ -34,6 +34,17 @@ export async function createGame(charactersCount: Map<string, number>) {
   return Game.deserializeBinary(response.data);
 }
 
+export async function swapGame(gameId: string, playerIndex: number) {
+  const response = await axios.post<Uint8Array>(
+    `/games/${gameId}/swap?player_index=${playerIndex}`,
+    {}, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return Game.deserializeBinary(response.data);
+}
+
 export async function getGame(gameId: string) {
   const response = await axios.get<Uint8Array>(`/games/${gameId}`);
   return Game.deserializeBinary(response.data);

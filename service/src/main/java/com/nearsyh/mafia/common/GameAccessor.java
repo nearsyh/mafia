@@ -338,4 +338,15 @@ public final class GameAccessor {
         }
         return deadCharacters;
     }
+
+    public static Game swapPlayer(Game game, int playerIndex) {
+        if (playerIndex < 0 || playerIndex >= game.getPlayersCount()) {
+            return game;
+        }
+        return game.toBuilder()
+            .setPlayers(playerIndex, Player.newBuilder()
+                .setCharacterTop(game.getPlayers(playerIndex).getCharacterBot())
+                .setCharacterBot(game.getPlayers(playerIndex).getCharacterTop()))
+            .build();
+    }
 }
