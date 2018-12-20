@@ -47,6 +47,7 @@ public class GameManagementHandler {
     @GetMapping("/games/support_characters")
     public Mono<List<String>> allSupportedCharacters() {
         return Mono.just(AbstractCharacter.allSupportedCharacterTypes().stream()
+            .filter(characterType -> characterType != CharacterType.CHARACTER_TYPE_UNSPECIFIED)
             .map(CharacterType::name)
             .collect(Collectors.toList()));
     }

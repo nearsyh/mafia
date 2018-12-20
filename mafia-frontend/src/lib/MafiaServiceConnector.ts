@@ -14,6 +14,7 @@ const axios = Axios.create({
 
 export async function getSupportedCharacterTypes() {
   const response = await axios.get<string[]>(`/games/support_characters`, {
+    responseType: '',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

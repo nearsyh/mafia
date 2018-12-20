@@ -77,7 +77,7 @@ export default class Start extends Vue {
   }
 
   private get totalCharacters() {
-    return this.charactersCount.reduce((p, c) => p + c);
+    return this.charactersCount.length <= 0 ? 0 : this.charactersCount.reduce((p, c) => p + c);
   }
 
   private async startGame() {
@@ -98,4 +98,3 @@ export default class Start extends Vue {
   border-radius: 0px;
 }
 </style>
-
