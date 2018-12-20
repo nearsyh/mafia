@@ -123,6 +123,11 @@ export class GameStatus extends jspb.Message {
   setAffectedCharactersList(value: Array<CharacterIndex>): void;
   addAffectedCharacters(value?: CharacterIndex, index?: number): CharacterIndex;
 
+  clearOnSurfaceWolvesList(): void;
+  getOnSurfaceWolvesList(): Array<number>;
+  setOnSurfaceWolvesList(value: Array<number>): void;
+  addOnSurfaceWolves(value: number, index?: number): number;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GameStatus.AsObject;
   static toObject(includeInstance: boolean, msg: GameStatus): GameStatus.AsObject;
@@ -144,6 +149,7 @@ export namespace GameStatus {
     deadCharactersList: Array<CharacterIndex.AsObject>,
     aliveCharactersList: Array<CharacterIndex.AsObject>,
     affectedCharactersList: Array<CharacterIndex.AsObject>,
+    onSurfaceWolvesList: Array<number>,
   }
 }
 

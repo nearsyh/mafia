@@ -675,7 +675,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.com.nearsyh.mafia.protos.GameStatus.repeatedFields_ = [7,8,9];
+proto.com.nearsyh.mafia.protos.GameStatus.repeatedFields_ = [7,8,9,10];
 
 
 
@@ -717,7 +717,8 @@ proto.com.nearsyh.mafia.protos.GameStatus.toObject = function(includeInstance, m
     aliveCharactersList: jspb.Message.toObjectList(msg.getAliveCharactersList(),
     proto.com.nearsyh.mafia.protos.CharacterIndex.toObject, includeInstance),
     affectedCharactersList: jspb.Message.toObjectList(msg.getAffectedCharactersList(),
-    proto.com.nearsyh.mafia.protos.CharacterIndex.toObject, includeInstance)
+    proto.com.nearsyh.mafia.protos.CharacterIndex.toObject, includeInstance),
+    onSurfaceWolvesList: jspb.Message.getRepeatedField(msg, 10)
   };
 
   if (includeInstance) {
@@ -792,6 +793,10 @@ proto.com.nearsyh.mafia.protos.GameStatus.deserializeBinaryFromReader = function
       var value = new proto.com.nearsyh.mafia.protos.CharacterIndex;
       reader.readMessage(value,proto.com.nearsyh.mafia.protos.CharacterIndex.deserializeBinaryFromReader);
       msg.addAffectedCharacters(value);
+      break;
+    case 10:
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt32());
+      msg.setOnSurfaceWolvesList(value);
       break;
     default:
       reader.skipField();
@@ -886,6 +891,13 @@ proto.com.nearsyh.mafia.protos.GameStatus.serializeBinaryToWriter = function(mes
       9,
       f,
       proto.com.nearsyh.mafia.protos.CharacterIndex.serializeBinaryToWriter
+    );
+  }
+  f = message.getOnSurfaceWolvesList();
+  if (f.length > 0) {
+    writer.writePackedInt32(
+      10,
+      f
     );
   }
 };
@@ -1075,6 +1087,35 @@ proto.com.nearsyh.mafia.protos.GameStatus.prototype.addAffectedCharacters = func
 
 proto.com.nearsyh.mafia.protos.GameStatus.prototype.clearAffectedCharactersList = function() {
   this.setAffectedCharactersList([]);
+};
+
+
+/**
+ * repeated int32 on_surface_wolves = 10;
+ * @return {!Array<number>}
+ */
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.getOnSurfaceWolvesList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 10));
+};
+
+
+/** @param {!Array<number>} value */
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.setOnSurfaceWolvesList = function(value) {
+  jspb.Message.setField(this, 10, value || []);
+};
+
+
+/**
+ * @param {!number} value
+ * @param {number=} opt_index
+ */
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.addOnSurfaceWolves = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 10, value, opt_index);
+};
+
+
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.clearOnSurfaceWolvesList = function() {
+  this.setOnSurfaceWolvesList([]);
 };
 
 
