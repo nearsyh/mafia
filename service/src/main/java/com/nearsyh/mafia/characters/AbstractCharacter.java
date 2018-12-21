@@ -127,9 +127,9 @@ public abstract class AbstractCharacter implements Character {
         } else {
             switch (currentEventType) {
                 case DUEL:
-                case PARDON:
                     return EventType.SPEECH;
                 case CONFESS:
+                case PARDON:
                     return EventType.SUNSET;
             }
         }

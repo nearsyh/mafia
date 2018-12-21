@@ -33,10 +33,10 @@ message GameStatus {
   int32 lover_index = 4;
 
   // 公主
-  int32 is_pardon_used = 5;
+  int32 pardon_index = 5;
 
   // 骑士
-  int32 is_duel_used = 6;
+  int32 duel_index = 6;
 
   // 角色存活状态
   repeated CharacterIndex dead_characters = 7;

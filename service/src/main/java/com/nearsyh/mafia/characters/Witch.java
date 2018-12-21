@@ -66,6 +66,7 @@ public class Witch extends AbstractCharacter implements Character {
                 .ifPresent(currentTurn::setCureCharacterIndex);
         }
         return gameBuilder
+            .setGameStatus(game.getGameStatus().toBuilder().setIsCureUsed(true))
             .setCurrentTurn(currentTurn)
             .build();
     }
@@ -110,6 +111,7 @@ public class Witch extends AbstractCharacter implements Character {
         }
         return gameBuilder
             .setCurrentTurn(currentTurn)
+            .setGameStatus(game.getGameStatus().toBuilder().setIsToxicUsed(true))
             .build();
     }
 }

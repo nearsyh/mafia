@@ -8,6 +8,7 @@ import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
+import com.nearsyh.mafia.protos.GameStatus;
 import com.nearsyh.mafia.protos.Player;
 import com.nearsyh.mafia.protos.TurnStatus;
 import java.time.Instant;
@@ -45,6 +46,7 @@ public final class GameConstructor {
         return Game.newBuilder()
             .addAllPlayers(players)
             .setCurrentTurn(constructInitialTurnStatus())
+            .setGameStatus(constructGameStatus())
             .setNextEvent(Event.newBuilder()
                 .setCurrentEventResponse("天黑请闭眼")
                 .setEventType(EventType.SUNSET)
@@ -68,6 +70,17 @@ public final class GameConstructor {
             .setMutedPlayerIndex(NO_PLAYER)
             .clearDeadCharacters()
             .clearVotedCharacters()
+            .build();
+    }
+
+    public static GameStatus constructGameStatus() {
+        return GameStatus.newBuilder()
+            .setIdolIndex(NO_PLAYER)
+            .setLoverIndex(NO_PLAYER)
+            .setIsCureUsed(false)
+            .setIsToxicUsed(false)
+            .setPardonIndex(NO_PLAYER)
+            .setDuelIndex(NO_PLAYER)
             .build();
     }
 }
