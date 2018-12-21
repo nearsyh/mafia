@@ -710,8 +710,8 @@ proto.com.nearsyh.mafia.protos.GameStatus.toObject = function(includeInstance, m
     isToxicUsed: jspb.Message.getFieldWithDefault(msg, 2, false),
     idolIndex: jspb.Message.getFieldWithDefault(msg, 3, 0),
     loverIndex: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    isPardonUsed: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    isDuelUsed: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    pardonIndex: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    duelIndex: jspb.Message.getFieldWithDefault(msg, 6, 0),
     deadCharactersList: jspb.Message.toObjectList(msg.getDeadCharactersList(),
     proto.com.nearsyh.mafia.protos.CharacterIndex.toObject, includeInstance),
     aliveCharactersList: jspb.Message.toObjectList(msg.getAliveCharactersList(),
@@ -773,11 +773,11 @@ proto.com.nearsyh.mafia.protos.GameStatus.deserializeBinaryFromReader = function
       break;
     case 5:
       var value = /** @type {number} */ (reader.readInt32());
-      msg.setIsPardonUsed(value);
+      msg.setPardonIndex(value);
       break;
     case 6:
       var value = /** @type {number} */ (reader.readInt32());
-      msg.setIsDuelUsed(value);
+      msg.setDuelIndex(value);
       break;
     case 7:
       var value = new proto.com.nearsyh.mafia.protos.CharacterIndex;
@@ -855,14 +855,14 @@ proto.com.nearsyh.mafia.protos.GameStatus.serializeBinaryToWriter = function(mes
       f
     );
   }
-  f = message.getIsPardonUsed();
+  f = message.getPardonIndex();
   if (f !== 0) {
     writer.writeInt32(
       5,
       f
     );
   }
-  f = message.getIsDuelUsed();
+  f = message.getDuelIndex();
   if (f !== 0) {
     writer.writeInt32(
       6,
@@ -968,31 +968,31 @@ proto.com.nearsyh.mafia.protos.GameStatus.prototype.setLoverIndex = function(val
 
 
 /**
- * optional int32 is_pardon_used = 5;
+ * optional int32 pardon_index = 5;
  * @return {number}
  */
-proto.com.nearsyh.mafia.protos.GameStatus.prototype.getIsPardonUsed = function() {
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.getPardonIndex = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /** @param {number} value */
-proto.com.nearsyh.mafia.protos.GameStatus.prototype.setIsPardonUsed = function(value) {
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.setPardonIndex = function(value) {
   jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int32 is_duel_used = 6;
+ * optional int32 duel_index = 6;
  * @return {number}
  */
-proto.com.nearsyh.mafia.protos.GameStatus.prototype.getIsDuelUsed = function() {
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.getDuelIndex = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /** @param {number} value */
-proto.com.nearsyh.mafia.protos.GameStatus.prototype.setIsDuelUsed = function(value) {
+proto.com.nearsyh.mafia.protos.GameStatus.prototype.setDuelIndex = function(value) {
   jspb.Message.setProto3IntField(this, 6, value);
 };
 

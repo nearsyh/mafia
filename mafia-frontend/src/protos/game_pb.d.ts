@@ -102,11 +102,11 @@ export class GameStatus extends jspb.Message {
   getLoverIndex(): number;
   setLoverIndex(value: number): void;
 
-  getIsPardonUsed(): number;
-  setIsPardonUsed(value: number): void;
+  getPardonIndex(): number;
+  setPardonIndex(value: number): void;
 
-  getIsDuelUsed(): number;
-  setIsDuelUsed(value: number): void;
+  getDuelIndex(): number;
+  setDuelIndex(value: number): void;
 
   clearDeadCharactersList(): void;
   getDeadCharactersList(): Array<CharacterIndex>;
@@ -144,8 +144,8 @@ export namespace GameStatus {
     isToxicUsed: boolean,
     idolIndex: number,
     loverIndex: number,
-    isPardonUsed: number,
-    isDuelUsed: number,
+    pardonIndex: number,
+    duelIndex: number,
     deadCharactersList: Array<CharacterIndex.AsObject>,
     aliveCharactersList: Array<CharacterIndex.AsObject>,
     affectedCharactersList: Array<CharacterIndex.AsObject>,
