@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { Game, Event } from '@/protos/game_pb';
 
-const MAFIA_ENDPOINT = 'http://localhost:8080';
+const MAFIA_ENDPOINT = 'https://mafia.ruguoapp.com';
 const axios = Axios.create({
   baseURL: MAFIA_ENDPOINT,
   timeout: 100000,
