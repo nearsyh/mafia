@@ -25,10 +25,14 @@ public class Guardian extends AbstractCharacter implements Character {
     }
 
     private Event.Builder preGuard(Game game, Event.Builder nextEventBuilder) {
-        var isOnTop = GameAccessor.isCharacterTypeOnSurface(game, CharacterType.GUARDIAN);
-        if (!isOnTop) {
+        if (GameAccessor.playersWhoCanUseSkill(game, CharacterType.GUARDIAN).isEmpty()) {
             return nextEventBuilder.clearCandidateTargets()
-                .setCurrentEventResponse("守卫请睁眼选择一个人守护 (不再上面, 直接下一步)")
+                .setCurrentEventResponse("守卫请睁眼选择一个人守护 (不在上面, 直接下一步)")
+                .addCandidateTargets(NO_PLAYER);
+        }
+        if (GameAccessor.notFrozenPlayers(game, getCharacterType()).isEmpty()) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse("守卫请睁眼选择一个人守护 (被冻住了)")
                 .addCandidateTargets(NO_PLAYER);
         }
         var lastGuardedPlayer = GameAccessor.lastGuardedPlayer(game);

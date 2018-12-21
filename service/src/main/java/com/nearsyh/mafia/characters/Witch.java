@@ -30,7 +30,7 @@ public class Witch extends AbstractCharacter implements Character {
         var isOnTop = GameAccessor.isCharacterTypeOnSurface(game, CharacterType.WITCH);
         if (!isOnTop) {
             return nextEventBuilder.clearCandidateTargets()
-                .setCurrentEventResponse("今晚死的人是 TA, 你有一瓶解药要救吗? (不在当前第一张牌, 直接下一步)")
+                .setCurrentEventResponse("今晚死的人是 TA, 你有一瓶解药要救吗? (不在上面, 直接下一步)")
                 .addCandidateTargets(NO_PLAYER);
         }
 
@@ -38,7 +38,14 @@ public class Witch extends AbstractCharacter implements Character {
         var isPlayerKilledForWitch =
             GameAccessor.isPlayerActuallyKilledThisTurnForWitch(game, killedPlayerIndex);
         var message = String.format(
-            "今晚死的人是 TA (%s), 你有一瓶解药要救吗?", isPlayerKilledForWitch ? (killedPlayerIndex + 1) : "没人死");
+            "今晚死的人是 TA (%s), 你有一瓶解药要救吗?",
+            isPlayerKilledForWitch ? (killedPlayerIndex + 1) : "没人死");
+        var hasWitch = !GameAccessor.notFrozenPlayers(game, CharacterType.WITCH).isEmpty();
+        if (!hasWitch) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse(message + " (被冻住了)")
+                .addCandidateTargets(NO_PLAYER);
+        }
         var candidatePlayers = new HashSet<Integer>();
         candidatePlayers.add(NO_PLAYER);
         if (game.getGameStatus().getIsCureUsed()) {
@@ -72,6 +79,13 @@ public class Witch extends AbstractCharacter implements Character {
         }
 
         var message = "你有一瓶毒药要用吗?";
+        var hasWitch = !GameAccessor.notFrozenPlayers(game, CharacterType.WITCH).isEmpty();
+        if (!hasWitch) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse(message + " (被冻住了)")
+                .addCandidateTargets(NO_PLAYER);
+        }
+
         var candidatePlayers = new HashSet<Integer>();
         candidatePlayers.add(NO_PLAYER);
         if (game.getGameStatus().getIsToxicUsed()) {

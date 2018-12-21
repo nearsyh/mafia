@@ -23,16 +23,20 @@ public final class GameAccessor {
     private GameAccessor() {
     }
 
+    public static boolean isCharacterTypeOnSurface(Game game, int playerIndex,
+        CharacterType characterType) {
+        var player = game.getPlayers(playerIndex);
+        if (!player.getCharacterTop().getIsDead()) {
+            return player.getCharacterTop().getCharacterType() == characterType;
+        } else if (!player.getCharacterBot().getIsDead()) {
+            return player.getCharacterBot().getCharacterType() == characterType;
+        }
+        return false;
+    }
+
     public static boolean isCharacterTypeOnSurface(Game game, CharacterType characterType) {
         return game.getPlayersList().stream().anyMatch(
-            player -> {
-                if (!player.getCharacterTop().getIsDead()) {
-                    return player.getCharacterTop().getCharacterType() == characterType;
-                } else if (!player.getCharacterBot().getIsDead()) {
-                    return player.getCharacterBot().getCharacterType() == characterType;
-                }
-                return false;
-            });
+            player -> isCharacterTypeOnSurface(game, player.getIndex(), characterType));
     }
 
     public static boolean hasWolvesOnSurface(Game game) {
@@ -354,5 +358,43 @@ public final class GameAccessor {
         return game.getPastTurnsCount() > 0
             && game.getPastTurns(game.getPastTurnsCount() - 1)
             .getAffectedCharacter().getPlayerIndex() >= 0;
+    }
+
+    public static List<Integer> playersWhoCanUseSkill(Game game, CharacterType characterType) {
+        return game.getPlayersList()
+            .stream()
+            .filter(player -> doesPlayerHasThisCharacter(game, player.getIndex(), characterType))
+            .filter(player -> {
+                switch (characterType) {
+                    case SEER:
+                    case SUCCUBUS:
+                        return true;
+                }
+                return isCharacterTypeOnSurface(game, player.getIndex(), characterType);
+            })
+            .map(Player::getIndex)
+            .collect(Collectors.toList());
+    }
+
+    public static List<Integer> wolvesWhoCanKill(Game game) {
+        return game.getPlayersList()
+            .stream()
+            .filter(player -> isWolfOnSurface(game, player))
+            .map(Player::getIndex)
+            .collect(Collectors.toList());
+    }
+
+    public static List<Integer> notFrozenPlayers(Game game, CharacterType characterType) {
+        return playersWhoCanUseSkill(game, characterType)
+            .stream()
+            .filter(playerIndex -> playerIndex != game.getCurrentTurn().getFrozenPlayerIndex())
+            .collect(Collectors.toList());
+    }
+
+    public static List<Integer> notFrozenWolves(Game game) {
+        return wolvesWhoCanKill(game)
+            .stream()
+            .filter(playerIndex -> playerIndex != game.getCurrentTurn().getFrozenPlayerIndex())
+            .collect(Collectors.toList());
     }
 }

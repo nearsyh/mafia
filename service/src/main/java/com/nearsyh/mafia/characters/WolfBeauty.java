@@ -35,6 +35,13 @@ public class WolfBeauty extends AbstractCharacter {
                 .clearCandidateTargets()
                 .addCandidateTargets(NO_PLAYER);
         }
+        var hasWolfBeauty = !GameAccessor.notFrozenPlayers(game, CharacterType.WOLF_BEAUTY)
+            .isEmpty();
+        if (!hasWolfBeauty) {
+            return nextEventBuilder.clearCandidateTargets()
+                .setCurrentEventResponse(message + " (被冻住了)")
+                .addCandidateTargets(NO_PLAYER);
+        }
 
         var doesAffectLastNight = GameAccessor.doesAffectLastNight(game);
         var candidatePlayers = !doesAffectLastNight

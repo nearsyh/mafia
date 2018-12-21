@@ -26,10 +26,15 @@ public final class Seer extends AbstractCharacter implements Character {
     }
 
     private Event.Builder preSee(Game game, Event.Builder nextEventBuilder) {
-        var candidatePlayers = new HashSet<>(GameAccessor.allAlivePlayersIndex(game));
+        var hasSeer = !GameAccessor.notFrozenPlayers(game, CharacterType.SEER).isEmpty();
+        var candidatePlayers = hasSeer
+            ? new HashSet<>(GameAccessor.allAlivePlayersIndex(game))
+            : new HashSet<Integer>();
         candidatePlayers.add(NO_PLAYER);
         return nextEventBuilder.clearCandidateTargets()
-            .setCurrentEventResponse("预言家请睁眼选择一个人查验身份 (可以不查)")
+            .setCurrentEventResponse(hasSeer
+                ? "预言家请睁眼选择一个人查验身份 (可以不查)"
+                : "预言家请睁眼选择一个人查验身份 (被冻住了, 不可以查)")
             .addAllCandidateTargets(candidatePlayers);
     }
 

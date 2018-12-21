@@ -30,17 +30,21 @@ public final class Werewolf extends AbstractCharacter implements Character {
     }
 
     private Event.Builder preKill(Game game, Event.Builder nextEventBuilder) {
-        var isOnTop = GameAccessor.hasWolvesOnSurface(game);
+        var hasWolves = !GameAccessor.wolvesWhoCanKill(game).isEmpty();
+        var hasNotFrozenWolves = !GameAccessor.notFrozenWolves(game).isEmpty();
         var candidatePlayers = new HashSet<>(GameAccessor.allAlivePlayersIndex(game));
         var noKillNightsCount = GameAccessor.noKillNightsCount(game);
         var message = "狼人睁眼杀人.";
-        if (isOnTop) {
+        if (hasWolves && hasNotFrozenWolves) {
             if (noKillNightsCount < 3) {
                 candidatePlayers.add(NO_PLAYER);
                 message += String.format(" (%s晚没杀人, 今晚可以不杀)", noKillNightsCount);
             } else {
                 message += " (3晚没杀人了, 必须杀)";
             }
+        } else if (hasWolves) {
+            candidatePlayers.add(NO_PLAYER);
+            message += " (唯一的普通狼被冻住了, 今晚可以不杀)";
         } else {
             candidatePlayers.add(NO_PLAYER);
             message += " (没有普通狼在上面, 今晚可以不杀)";
