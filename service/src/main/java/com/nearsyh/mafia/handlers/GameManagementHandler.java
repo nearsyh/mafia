@@ -7,6 +7,7 @@ import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.service.GameService;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,6 +64,11 @@ public class GameManagementHandler {
              && characterType != CharacterType.UNRECOGNIZED)
             .map(CharacterType::name)
             .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/games/recent")
+    public Mono<LinkedHashMap<String, Long>> getRecentGamesId() {
+        return gameService.getRecentGames(5);
     }
 
 }

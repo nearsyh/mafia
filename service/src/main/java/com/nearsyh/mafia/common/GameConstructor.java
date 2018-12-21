@@ -52,6 +52,7 @@ public final class GameConstructor {
                 .setEventType(EventType.SUNSET)
                 .setTimestamp(Instant.now().toEpochMilli())
                 .build())
+            .setStartTimestamp(Instant.now().toEpochMilli())
             .build();
     }
 

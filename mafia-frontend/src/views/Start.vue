@@ -71,12 +71,17 @@
             <tr>
               <th scope="col">角色名</th>
               <th scope="col">数量</th>
+              <th scope="col">角色名</th>
+              <th scope="col">数量</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for='(characterName, index) of usedCharacters' :key='index'>
-              <th scope="row">{{ characterName }}</th>
+            <tr v-for='(characterName, index) of usedCharacters' :key='index'
+              v-if='index % 2 === 0'>
+              <th scope="row">{{ usedCharacters[index] }}</th>
               <td>{{ charactersCount[index] }}</td>
+              <th v-if='index < usedCharacters.length' scope="row">{{ usedCharacters[index + 1] }}</th>
+              <td v-if='index < usedCharacters.length'>{{ charactersCount[index + 1] }}</td>
             </tr>
           </tbody>
         </table>
@@ -144,7 +149,7 @@ export default class Start extends Vue {
 
   private addCharacterType() {
     this.usedCharacters.push('');
-    this.charactersCount.push(0);
+    this.charactersCount.push(1);
   }
 
   private get totalCharacters() {
