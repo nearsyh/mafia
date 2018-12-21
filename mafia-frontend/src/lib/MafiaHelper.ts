@@ -13,20 +13,20 @@ function isCharacterTypeOnSurface(game: Game, characterType: CharacterType) {
 
 export function canPardon(game: Game) {
   if (!game.getNextEvent() || !game.getGameStatus()) {
-    return false
+    return false;
   }
   const eventType = game.getNextEvent()!.getEventType();
   return isCharacterTypeOnSurface(game, CharacterType.PRINCESS)
-    && eventType == EventType.VOTE
+    && eventType === EventType.VOTE
     && game.getGameStatus()!.getPardonIndex() < 0;
 }
 
 export function canDuel(game: Game) {
   if (!game.getNextEvent() || !game.getGameStatus()) {
-    return false
+    return false;
   }
   const eventType = game.getNextEvent()!.getEventType();
   return isCharacterTypeOnSurface(game, CharacterType.KNIGHT)
-    && eventType == EventType.SPEECH
+    && eventType === EventType.SPEECH
     && game.getGameStatus()!.getPardonIndex() < 0;
 }
