@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class AbstractCharacter implements Character {
 
@@ -27,7 +28,9 @@ public abstract class AbstractCharacter implements Character {
     }
 
     public static Set<CharacterType> allSupportedCharacterTypes() {
-        return REGISTERED_CHARACTERS.keySet();
+        return Set.of(CharacterType.values()).stream()
+            .filter(type -> type != CharacterType.CHARACTER_TYPE_UNSPECIFIED)
+            .collect(Collectors.toSet());
     }
 
     static void registerEventListeners(EventType eventType,
@@ -111,11 +114,29 @@ public abstract class AbstractCharacter implements Character {
                         continue;
                     }
                 }
+
+                if (GameAccessor.isThisTurnAffectedByDeadPrincess(game)) {
+                    if (nextEventTypeCandidate != EventType.AFFECT
+                        && nextEventTypeCandidate != EventType.KILL) {
+                        continue;
+                    }
+                }
+
                 if (nextEventTypeCandidate == EventType.SUNRISE) {
                     return nextEventTypeCandidate;
                 } else if (nextEventTypeCandidate == EventType.KILL) {
                     return nextEventTypeCandidate;
                 } else {
+                    if (GameAccessor.isThisTurnAffectedByDeadMoon(game)) {
+                        if (nextEventTypeCandidate == EventType.SPEECH) {
+                            return EventType.SUNSET;
+                        }
+                    }
+                    if (GameAccessor.isThisTurnAffectedByDeadSun(game)) {
+                        if (nextEventTypeCandidate == EventType.SUNSET) {
+                            return EventType.SPEECH;
+                        }
+                    }
                     var characterTypes = EVENT_LISTENER_TYPES.get(nextEventTypeCandidate);
                     if (characterTypes != null
                         && GameAccessor.hasAliveCharacterInGame(game, characterTypes)) {

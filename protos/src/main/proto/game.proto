@@ -19,6 +19,9 @@ message TurnStatus {
   int32 muted_player_index = 11;                  // 禁言的人.
   repeated CharacterIndex dead_characters = 12;   // 所有死了的人.
   repeated CharacterIndex voted_characters = 13;  // 投死的人.
+  bool is_moon_dead = 14;                         // 月亮死了吗.
+  bool is_sun_dead = 15;                          // 太阳死了吗.
+  bool is_princess_dead = 16;                     // 公主死了吗.
 }
 
 message GameStatus {
@@ -87,6 +90,8 @@ enum CharacterType {
   PRINCESS = 13;                  // 公主
   KNIGHT = 14;                    // 骑士
   FOX = 15;                       // 狐狸
+  MOON = 16;                      // 月亮
+  SUN = 17;                       // 太阳
 }
 
 message CharacterIndex {

@@ -221,7 +221,7 @@ public final class GameAccessor {
                     return true;
                 } else if (!player.getCharacterBot().getIsDead()
                     && characterTypes.contains(player.getCharacterBot().getCharacterType())) {
-                    return true ;
+                    return true;
                 }
                 return false;
             });
@@ -293,16 +293,21 @@ public final class GameAccessor {
         var builder = game.toBuilder();
         var deadMap = characterIndices.stream()
             .collect(Collectors.groupingBy(CharacterIndex::getPlayerIndex));
+        var deadCharacterTypes = new HashSet<CharacterType>();
         deadMap.forEach((playerIndex, characters) -> {
             var playerBuilder = game.getPlayers(playerIndex).toBuilder();
             characters.forEach(characterIndex -> {
                 if (characterIndex.getCharacterIndex() == BOT_CHARACTER) {
                     playerBuilder.setCharacterBot(
                         game.getPlayers(playerIndex).getCharacterBot().toBuilder().setIsDead(true));
+                    deadCharacterTypes.add(game.getPlayers(playerIndex).getCharacterBot()
+                        .getCharacterType());
                 }
                 if (characterIndex.getCharacterIndex() == TOP_CHARACTER) {
                     playerBuilder.setCharacterTop(
                         game.getPlayers(playerIndex).getCharacterTop().toBuilder().setIsDead(true));
+                    deadCharacterTypes.add(game.getPlayers(playerIndex).getCharacterTop()
+                        .getCharacterType());
                 }
             });
             builder.setPlayers(playerIndex, playerBuilder);
@@ -313,7 +318,12 @@ public final class GameAccessor {
                 .filter(player -> isWolfOnSurface(tmpGame, player))
                 .map(Player::getIndex)
                 .collect(Collectors.toList()));
-        return builder.setGameStatus(gameStatusBuilder).build();
+        return builder.setGameStatus(gameStatusBuilder)
+            .setCurrentTurn(tmpGame.getCurrentTurn().toBuilder()
+                .setIsMoonDead(deadCharacterTypes.contains(CharacterType.MOON))
+                .setIsSunDead(deadCharacterTypes.contains(CharacterType.SUN))
+                .setIsPrincessDead(deadCharacterTypes.contains(CharacterType.PRINCESS)))
+            .build();
     }
 
     public static Set<CharacterIndex> getAllDeadCharacters(Game game,
@@ -449,5 +459,26 @@ public final class GameAccessor {
             }
         }
         return ret;
+    }
+
+    public static boolean isThisTurnAffectedByDeadPrincess(Game game) {
+        if (game.getPastTurnsCount() <= 0) {
+            return false;
+        }
+        return game.getPastTurns(game.getPastTurnsCount() - 1).getIsPrincessDead();
+    }
+
+    public static boolean isThisTurnAffectedByDeadMoon(Game game) {
+        if (game.getPastTurnsCount() <= 0) {
+            return false;
+        }
+        return game.getPastTurns(game.getPastTurnsCount() - 1).getIsMoonDead();
+    }
+
+    public static boolean isThisTurnAffectedByDeadSun(Game game) {
+        if (game.getPastTurnsCount() <= 0) {
+            return false;
+        }
+        return game.getPastTurns(game.getPastTurnsCount() - 1).getIsSunDead();
     }
 }
