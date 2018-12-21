@@ -84,8 +84,8 @@ enum CharacterType {
   WOLF_CHILD = 10;                // 野孩子
   SUCCUBUS = 11;                  // 魅狼
   MUTER = 12;                     // 禁言长老
-  PRINCESS = 13;                  // 公主 TODO
-  KNIGHT = 14;                    // 骑士 TODO
+  PRINCESS = 13;                  // 公主
+  KNIGHT = 14;                    // 骑士
   FOX = 15;                       // 狐狸
 }
 

@@ -4,6 +4,7 @@ import static com.nearsyh.mafia.common.GameAccessor.NO_PLAYER;
 
 import com.google.common.base.Preconditions;
 import com.nearsyh.mafia.common.GameAccessor;
+import com.nearsyh.mafia.common.GameConstants;
 import com.nearsyh.mafia.protos.CharacterIndex;
 import com.nearsyh.mafia.protos.CharacterType;
 import com.nearsyh.mafia.protos.Event;
@@ -11,6 +12,7 @@ import com.nearsyh.mafia.protos.EventType;
 import com.nearsyh.mafia.protos.Game;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -93,12 +95,18 @@ public final class Werewolf extends AbstractCharacter implements Character {
             .get();
         var newDeadCharacters = GameAccessor.getAllDeadCharacters(game, Set.of(character));
 
-        game = GameAccessor.markCharacterAsDead(game, newDeadCharacters);
-
-        return game.toBuilder()
+        var updateGame = GameAccessor.markCharacterAsDead(game, newDeadCharacters);
+        return updateGame.toBuilder()
             .setCurrentTurn(
-                game.getCurrentTurn().toBuilder().addAllDeadCharacters(newDeadCharacters))
-            .setGameStatus(game.getGameStatus().toBuilder().addAllDeadCharacters(newDeadCharacters))
+                updateGame.getCurrentTurn().toBuilder().addAllDeadCharacters(newDeadCharacters))
+            .setGameStatus(
+                updateGame.getGameStatus().toBuilder().addAllDeadCharacters(newDeadCharacters))
+            .setNextEvent(updateGame.getNextEvent().toBuilder()
+                .setLastEventResponse(String.format(
+                    "爆狼之后死的人是 %s", newDeadCharacters.stream()
+                        .map(characterIndex -> GameConstants
+                            .toPlayerName(updateGame, characterIndex))
+                        .collect(Collectors.joining(",")))))
             .build();
     }
 }

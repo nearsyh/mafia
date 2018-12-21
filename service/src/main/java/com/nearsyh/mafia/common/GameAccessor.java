@@ -113,7 +113,7 @@ public final class GameAccessor {
         return false;
     }
 
-    private static boolean isWolfOrSuccubus(Game game, Character character) {
+    public static boolean isWolfOrSuccubus(Game game, Character character) {
         return character.getCharacterType() == CharacterType.SUCCUBUS || isWolf(game, character);
     }
 
