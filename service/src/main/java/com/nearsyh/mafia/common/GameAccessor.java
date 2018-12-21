@@ -344,7 +344,7 @@ public final class GameAccessor {
             return game;
         }
         return game.toBuilder()
-            .setPlayers(playerIndex, Player.newBuilder()
+            .setPlayers(playerIndex, game.getPlayers(playerIndex).toBuilder()
                 .setCharacterTop(game.getPlayers(playerIndex).getCharacterBot())
                 .setCharacterBot(game.getPlayers(playerIndex).getCharacterTop()))
             .build();
