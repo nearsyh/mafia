@@ -105,6 +105,12 @@ public abstract class AbstractCharacter implements Character {
             // 晚上就要根据活着的角色决定.
             for (int i = currentPrecedence + 1; i <= START_OF_DAY; i++) {
                 var nextEventTypeCandidate = PRECEDENCE.get(i);
+                if (nextEventTypeCandidate == EventType.CHOOSE_IDOL
+                    || nextEventTypeCandidate == EventType.CHOOSE_LOVER) {
+                    if (game.getTurnId() > 1) {
+                        continue;
+                    }
+                }
                 if (nextEventTypeCandidate == EventType.SUNRISE) {
                     return nextEventTypeCandidate;
                 } else if (nextEventTypeCandidate == EventType.KILL) {

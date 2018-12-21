@@ -81,7 +81,7 @@ enum CharacterType {
   PENGUIN = 7;                    // 企鹅
   TOAST_BAKER = 8;                // 面包师傅 TODO
   WOLF_BEAUTY = 9;                // 狼美人
-  WOLF_CHILD = 10;                // 野孩子 TODO
+  WOLF_CHILD = 10;                // 野孩子
   SUCCUBUS = 11;                  // 魅狼 TODO
   MUTER = 12;                     // 禁言长老 TODO
   PRINCESS = 13;                  // 公主 TODO
