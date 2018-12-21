@@ -11,13 +11,13 @@
     <button type="button" class="btn btn-success btn-block"
       @click='nextStep'
       :disabled='!ready'>
-      {{ ready ? "下一步" : "需要选一个角色" }}
+      {{ ready ? "下一步" : "需要选一个角色才能下一步" }}
     </button>
 
     <button type="button" class="btn btn-danger btn-block"
       @click='confess'
       :disabled='!canConfess'>
-      {{ isInConfess ? (selectedIndex < 0 ? "选择自爆的狼人" : "确认") : "狼人自爆" }}
+      {{ isInConfess ? (selectedIndex < 0 ? "选择自爆的狼人" : "确认") : (canConfess ? "狼人自爆" : "没有狼在上面不能自爆") }}
     </button>
   </div>
 </template>

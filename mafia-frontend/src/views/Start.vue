@@ -40,28 +40,34 @@
     </div>
 
     <div id='step-2' v-if='started && !readyToPlay'>
-      <div class='row container-fluid'>
-        <div class='card half'>
-          <div class='card-body'>
-            <h6 class="card-title">第一张</h6>
-            <p class="card-text">
-              {{ characters[0] }}
-            </p>
+      <h5 class='title'>{{ this.currentPlayerIndex + 1}} 号玩家</h5>
+      <div class='characters-view container-fluid row'>
+        <div class='half'>
+          <div class='card character-view'>
+            <div class='card-body'>
+              <h6 class="card-title">第一张</h6>
+              <p class="card-text" :class='{hidden: !showCharacters}'>
+                {{ characters[0] }}
+              </p>
+            </div>
           </div>
         </div>
-        <div class='card half'>
-          <div class='card-body'>
-            <h6 class="card-title">第二张</h6>
-            <p class="card-text">
-              {{ characters[1] }}
-            </p>
+        <div class='half'>
+          <div class='card character-view'>
+            <div class='card-body'>
+              <h6 class="card-title">第二张</h6>
+              <p class="card-text" :class='{hidden: !showCharacters}'>
+                {{ characters[1] }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <div class='row'>
-        <button class='btn btn-success' @click="toggleCharacters">{{ showCharacters ? "隐藏" : "查看" }}</button>
-        <button class='btn btn-primary' @click="swap">交换</button>
-        <button class='btn btn-danger' @click="confirmCharacters">确认</button>
+      <div class='row bottom'>
+        <button class='col btn btn-success' @click="toggleCharacters">{{ showCharacters ? "隐藏" : "查看" }}</button>
+        <button class='col btn btn-primary' @click="swap">交换</button>
+        <button class='col btn btn-danger' @click="confirmCharacters">确认</button>
+        <button class='col btn btn-primary' @click="previousPlayer">上一位</button>
       </div>
     </div>
 
@@ -143,7 +149,22 @@ export default class Start extends Vue {
     return this.game.getId() && this.game.getId().length > 0;
   }
 
+  private previousPlayer() {
+    if (this.currentPlayerIndex > 0) {
+      this.showCharacters = false;
+      this.currentPlayerIndex -= 1;
+      if (this.currentPlayerIndex >= this.playersNumber) {
+        return;
+      }
+      const player = this.game.getPlayersList()[this.currentPlayerIndex];
+      this.characters = [
+        player.getCharacterTop()!.getCharacterType(),
+        player.getCharacterBot()!.getCharacterType()].map(toReadableName);
+    }
+  }
+
   private nextPlayer() {
+    this.showCharacters = false;
     this.currentPlayerIndex += 1;
     if (this.currentPlayerIndex >= this.playersNumber) {
       return;
@@ -166,7 +187,6 @@ export default class Start extends Vue {
     if (firstName !== this.characters[0]) {
       this.game = await swapGame(this.game.getId(), this.currentPlayerIndex);
     }
-    this.showCharacters = false;
     this.nextPlayer();
   }
 
@@ -201,6 +221,8 @@ export default class Start extends Vue {
   position:absolute;
   bottom:0;
   height: 100px;
+  width: 100%;
+  margin: 0px;
 }
 
 .card-body {
@@ -208,8 +230,12 @@ export default class Start extends Vue {
   padding-bottom: 5px;
 }
 
-.player-view {
-  margin: 5px;
+.characters-view {
+  margin: auto;
+}
+
+.character-view {
+  margin: 10px;
 }
 
 .half {
@@ -222,5 +248,14 @@ export default class Start extends Vue {
 
 .card-text {
   margin-bottom: 5px;
+}
+
+.hidden {
+  background-color: black;
+  color: black;
+}
+
+.title {
+  padding-top: 30px;
 }
 </style>

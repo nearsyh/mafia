@@ -1,6 +1,6 @@
 <template>
   <div class='game-info'>
-    <h5>当前是第 {{ game.getTurnId() }} 回合.</h5>
+    <h5 class='title'>当前是第 {{ game.getTurnId() }} 回合</h5>
   </div>
 </template>
 
@@ -20,4 +20,7 @@ export default class GameInfo extends Vue {
 </script>
 
 <style scoped>
+.title {
+  padding-top: 20px;
+}
 </style>
