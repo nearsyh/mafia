@@ -10,40 +10,43 @@ import com.nearsyh.mafia.protos.Game;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ToastBaker extends AbstractCharacter {
+public class Doctor extends AbstractCharacter {
 
-    private static final ToastBaker INSTANCE = new ToastBaker();
+    private static final Doctor INSTANCE = new Doctor();
 
     static {
-        registerEventListeners(EventType.TOAST, INSTANCE.getCharacterType(), INSTANCE::toast);
-        registerPreEventListeners(EventType.TOAST, INSTANCE::preToast);
+        registerEventListeners(EventType.INJECT, INSTANCE.getCharacterType(), INSTANCE::inject);
+        registerPreEventListeners(EventType.INJECT, INSTANCE::preInject);
     }
 
-    private ToastBaker() {
-        super(CharacterType.TOAST_BAKER);
+    private Doctor() {
+        super(CharacterType.DOCTOR);
     }
 
-    private Event.Builder preToast(Game game, Event.Builder nextEventBuilder) {
+    private Event.Builder preInject(Game game, Event.Builder nextEventBuilder) {
         if (GameAccessor.playersWhoCanUseSkill(game, getCharacterType()).isEmpty()) {
             return nextEventBuilder.clearCandidateTargets()
-                .setCurrentEventResponse("面包师傅选择一个人放面包 (不在上面, 直接下一步)")
+                .setCurrentEventResponse("医生请扎针 (不在上面, 直接下一步)")
                 .addCandidateTargets(NO_PLAYER);
         }
         if (GameAccessor.notFrozenPlayers(game, getCharacterType()).isEmpty()) {
             return nextEventBuilder.clearCandidateTargets()
-                .setCurrentEventResponse("面包师傅选择一个人放面包 (被冻住了)")
+                .setCurrentEventResponse("医生请扎针 (被冻住了)")
                 .addCandidateTargets(NO_PLAYER);
         }
         return nextEventBuilder
+            .setCurrentEventResponse("医生请扎针")
             .clearCandidateTargets()
             .addAllCandidateTargets(GameAccessor.allAlivePlayersIndex(game))
-            .setCurrentEventResponse("面包师傅选择一个人放面包");
+            .addCandidateTargets(NO_PLAYER);
     }
 
-    private Game toast(Game game, Event event) {
+    private Game inject(Game game, Event event) {
+        var turnBuilder = game.getCurrentTurn().toBuilder();
+        GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
+            .ifPresent(turnBuilder::setInjectionCharacterIndex);
         return game.toBuilder()
-            .setCurrentTurn(game.getCurrentTurn().toBuilder()
-                .setToastPlayerIndex(event.getTargets(0)))
+            .setCurrentTurn(turnBuilder)
             .build();
     }
 }

@@ -25,7 +25,7 @@ public class Guardian extends AbstractCharacter implements Character {
     }
 
     private Event.Builder preGuard(Game game, Event.Builder nextEventBuilder) {
-        if (GameAccessor.playersWhoCanUseSkill(game, CharacterType.GUARDIAN).isEmpty()) {
+        if (GameAccessor.playersWhoCanUseSkill(game, getCharacterType()).isEmpty()) {
             return nextEventBuilder.clearCandidateTargets()
                 .setCurrentEventResponse("守卫请睁眼选择一个人守护 (不在上面, 直接下一步)")
                 .addCandidateTargets(NO_PLAYER);

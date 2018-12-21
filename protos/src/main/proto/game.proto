@@ -75,7 +75,7 @@ enum CharacterType {
   NORMAL_VILLAGER = 1;            // 普通村民
   WEREWOLF = 2;                   // 狼人
   SEER = 3;                       // 预言家
-  DOCTOR = 4;                     // 医生 TODO
+  DOCTOR = 4;                     // 医生
   WITCH = 5;                      // 女巫
   GUARDIAN = 6;                   // 守卫
   PENGUIN = 7;                    // 企鹅
@@ -83,7 +83,7 @@ enum CharacterType {
   WOLF_BEAUTY = 9;                // 狼美人
   WOLF_CHILD = 10;                // 野孩子
   SUCCUBUS = 11;                  // 魅狼
-  MUTER = 12;                     // 禁言长老 TODO
+  MUTER = 12;                     // 禁言长老
   PRINCESS = 13;                  // 公主 TODO
   KNIGHT = 14;                    // 骑士 TODO
   FOX = 15;                       // 狐狸
