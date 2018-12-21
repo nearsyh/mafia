@@ -34,9 +34,19 @@ public final class Werewolf extends AbstractCharacter implements Character {
         var hasNotFrozenWolves = !GameAccessor.notFrozenWolves(game).isEmpty();
         var candidatePlayers = new HashSet<>(GameAccessor.allAlivePlayersIndex(game));
         var noKillNightsCount = GameAccessor.noKillNightsCount(game);
+        var hasToast = game.getCurrentTurn().getToastPlayerIndex() >= 0;
         var message = "狼人睁眼杀人.";
+        if (GameAccessor.hasAliveCharacterInGame(game, Set.of(CharacterType.TOAST_BAKER))) {
+            message += String.format(
+                " 面包在这位玩家头上(%s)", hasToast
+                    ? game.getCurrentTurn().getToastPlayerIndex() + 1 : "没有面包");
+        }
         if (hasWolves && hasNotFrozenWolves) {
-            if (noKillNightsCount < 3) {
+            if (hasToast) {
+                candidatePlayers.clear();
+                candidatePlayers.addAll(GameAccessor.getToastCoveredPlayerIndices(game));
+                message += " (有面包, 必须杀人)";
+            } else if (noKillNightsCount < 3) {
                 candidatePlayers.add(NO_PLAYER);
                 message += String.format(" (%s晚没杀人, 今晚可以不杀)", noKillNightsCount);
             } else {
@@ -48,6 +58,9 @@ public final class Werewolf extends AbstractCharacter implements Character {
         } else {
             candidatePlayers.add(NO_PLAYER);
             message += " (没有普通狼在上面, 今晚可以不杀)";
+        }
+        if (candidatePlayers.contains(NO_PLAYER) && hasToast) {
+            message += " (有面包, 魅狼睁眼的话必须杀人)";
         }
         return nextEventBuilder.clearCandidateTargets()
             .setCurrentEventResponse(message)

@@ -79,7 +79,7 @@ enum CharacterType {
   WITCH = 5;                      // 女巫
   GUARDIAN = 6;                   // 守卫
   PENGUIN = 7;                    // 企鹅
-  TOAST_BAKER = 8;                // 面包师傅 TODO
+  TOAST_BAKER = 8;                // 面包师傅
   WOLF_BEAUTY = 9;                // 狼美人
   WOLF_CHILD = 10;                // 野孩子
   SUCCUBUS = 11;                  // 魅狼

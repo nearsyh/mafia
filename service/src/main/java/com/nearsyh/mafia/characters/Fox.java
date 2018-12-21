@@ -40,7 +40,8 @@ public class Fox extends AbstractCharacter {
         }
 
         var hasBadGuys = GameAccessor
-            .doesPlayerSeemBad(game, GameAccessor.getPlayerOfType(game, getCharacterType()));
+            .doFollowingPlayersSeemBad(game,
+                GameAccessor.getPlayerOfType(game, getCharacterType()));
         return nextEventBuilder
             .setCurrentEventResponse(String.format(message, hasBadGuys ? "有狼" : "没狼"));
     }

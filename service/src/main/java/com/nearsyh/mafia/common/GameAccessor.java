@@ -128,7 +128,7 @@ public final class GameAccessor {
         var verifiedCount = 0;
         var previousPlayerIndex = foxIndex;
         while (verifiedCount < 3) {
-            previousPlayerIndex = (previousPlayerIndex + 1) % game.getPastTurnsCount();
+            previousPlayerIndex = (previousPlayerIndex + 1) % game.getPlayersCount();
             var currentPlayerIndex = previousPlayerIndex;
             if (currentPlayerIndex == foxIndex) {
                 return false;
@@ -419,5 +419,35 @@ public final class GameAccessor {
             .stream()
             .filter(playerIndex -> playerIndex != game.getCurrentTurn().getFrozenPlayerIndex())
             .collect(Collectors.toList());
+    }
+
+    public static Set<Integer> getToastCoveredPlayerIndices(Game game) {
+        var ret = new HashSet<Integer>();
+        var toastIndex = game.getCurrentTurn().getToastPlayerIndex();
+        ret.add(toastIndex);
+
+        var previousPlayerIndex = toastIndex;
+        while (true) {
+            previousPlayerIndex = (previousPlayerIndex + 1) % game.getPlayersCount();
+            var currentPlayerIndex = previousPlayerIndex;
+            if (isPlayerAlive(game, currentPlayerIndex)) {
+                ret.add(currentPlayerIndex);
+                break;
+            } else if (ret.contains(currentPlayerIndex)) {
+                break;
+            }
+        }
+        previousPlayerIndex = toastIndex;
+        while (true) {
+            previousPlayerIndex = (previousPlayerIndex - 1) % game.getPlayersCount();
+            var currentPlayerIndex = previousPlayerIndex;
+            if (isPlayerAlive(game, currentPlayerIndex)) {
+                ret.add(currentPlayerIndex);
+                break;
+            } else if (ret.contains(currentPlayerIndex)) {
+                break;
+            }
+        }
+        return ret;
     }
 }
