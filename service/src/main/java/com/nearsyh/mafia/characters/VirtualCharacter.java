@@ -175,6 +175,11 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
 
         return updatedGame.toBuilder()
             .setCurrentTurn(currentTurnBuilder)
+            .setNextEvent(updatedGame.getNextEvent().toBuilder()
+                .setLastEventResponse(String.format(
+                    "投完票死的人是 %s", newDeadCharacterIndices.stream()
+                        .map(characterIndex -> GameConstants.toPlayerName(game, characterIndex))
+                        .collect(Collectors.joining(",")))))
             .setGameStatus(
                 updatedGame.getGameStatus().toBuilder()
                     .addAllDeadCharacters(newDeadCharacterIndices))

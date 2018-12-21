@@ -27,7 +27,7 @@ public class WolfBeauty extends AbstractCharacter {
     }
 
     private Event.Builder preAffect(Game game, Event.Builder nextEventBuilder) {
-        var message = "选择一个人魅惑";
+        var message = "狼美人选择一个人魅惑";
 
         var isOnTop = GameAccessor.isCharacterTypeOnSurface(game, CharacterType.WOLF_BEAUTY);
         if (!isOnTop) {
@@ -37,7 +37,7 @@ public class WolfBeauty extends AbstractCharacter {
         }
 
         var doesAffectLastNight = GameAccessor.doesAffectLastNight(game);
-        var candidatePlayers = doesAffectLastNight
+        var candidatePlayers = !doesAffectLastNight
             ? new HashSet<>(GameAccessor.allAlivePlayersIndex(game))
             : Set.of(NO_PLAYER);
         if (doesAffectLastNight) {
@@ -58,6 +58,8 @@ public class WolfBeauty extends AbstractCharacter {
         return game.toBuilder()
             .setCurrentTurn(game.getCurrentTurn().toBuilder()
                 .setAffectedCharacter(characterIndexOpt.get()))
+            .setGameStatus(game.getGameStatus().toBuilder()
+                .addAffectedCharacters(characterIndexOpt.get()))
             .build();
     }
 }

@@ -1,4 +1,4 @@
-GAME_ID=458de60b-41c0-4da0-b39b-7a99b97745cd
+GAME_ID=64fd21e6-3c83-43a4-86db-1c64cc2888a4
 
 curl -i "localhost:8080/games/$GAME_ID"\
 	-H 'Content-Type: application/json' -H 'Accept: application/json'
