@@ -13,8 +13,8 @@ public class Penguin extends AbstractCharacter {
     private static final Penguin INSTANCE = new Penguin();
 
     static {
-        registerEventListeners(EventType.GUARD, INSTANCE.getCharacterType(), INSTANCE::freeze);
-        registerPreEventListeners(EventType.GUARD, INSTANCE::preFreeze);
+        registerEventListeners(EventType.FREEZE, INSTANCE.getCharacterType(), INSTANCE::freeze);
+        registerPreEventListeners(EventType.FREEZE, INSTANCE::preFreeze);
     }
 
     private Penguin() {

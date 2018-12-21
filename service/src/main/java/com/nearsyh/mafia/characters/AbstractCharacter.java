@@ -93,26 +93,29 @@ public abstract class AbstractCharacter implements Character {
         EventType.SUNSET
     );
     private static int START_OF_DAY = PRECEDENCE.indexOf(EventType.SUNRISE);
+
     private static EventType nextEventType(Game game, Event currentEvent) {
         var currentEventType = currentEvent.getEventType();
         var currentPrecedence = PRECEDENCE.indexOf(currentEventType);
         if (currentPrecedence >= 0) {
             // 白天就按部就班
             if (currentPrecedence >= START_OF_DAY) {
-              return PRECEDENCE.get(currentPrecedence + 1);
+                return PRECEDENCE.get(currentPrecedence + 1);
             }
             // 晚上就要根据活着的角色决定.
-            for (int i = currentPrecedence + 1; i <= START_OF_DAY; i ++) {
-              var nextEventTypeCandidate = PRECEDENCE.get(i);
-              if (nextEventTypeCandidate == EventType.SUNRISE) {
-                return nextEventTypeCandidate;
-              } else {
-                  var characterTypes = EVENT_LISTENER_TYPES.get(nextEventTypeCandidate);
-                  if (characterTypes != null
-                      && GameAccessor.hasAliveCharacterInGame(game, characterTypes)) {
-                      return nextEventTypeCandidate;
-                  }
-              }
+            for (int i = currentPrecedence + 1; i <= START_OF_DAY; i++) {
+                var nextEventTypeCandidate = PRECEDENCE.get(i);
+                if (nextEventTypeCandidate == EventType.SUNRISE) {
+                    return nextEventTypeCandidate;
+                } else if (nextEventTypeCandidate == EventType.KILL) {
+                    return nextEventTypeCandidate;
+                } else {
+                    var characterTypes = EVENT_LISTENER_TYPES.get(nextEventTypeCandidate);
+                    if (characterTypes != null
+                        && GameAccessor.hasAliveCharacterInGame(game, characterTypes)) {
+                        return nextEventTypeCandidate;
+                    }
+                }
             }
             return PRECEDENCE.get(currentPrecedence + 1);
         } else {

@@ -198,10 +198,16 @@ public final class GameAccessor {
     public static boolean hasAliveCharacterInGame(Game game,
         Collection<CharacterType> characterTypes) {
         return game.getPlayersList().stream().anyMatch(
-            player -> !(player.getCharacterTop().getIsDead()
-                && characterTypes.contains(player.getCharacterTop().getCharacterType()))
-                || !(player.getCharacterBot().getIsDead()
-                && characterTypes.contains(player.getCharacterBot().getCharacterType())));
+            player -> {
+                if (!player.getCharacterTop().getIsDead()
+                    && characterTypes.contains(player.getCharacterTop().getCharacterType())) {
+                    return true;
+                } else if (!player.getCharacterBot().getIsDead()
+                    && characterTypes.contains(player.getCharacterBot().getCharacterType())) {
+                    return true ;
+                }
+                return false;
+            });
     }
 
     public static int getPlayerOfType(Game game, CharacterType characterType) {
