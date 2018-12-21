@@ -33,8 +33,8 @@
           :disabled='totalCharacters !== playersNumber * 2' 
           @click='startGame'>
           {{ totalCharacters < playersNumber * 2
-            ? "角色数量还不够哟"
-            : totalCharacters > playersNumber * 2 ? "角色数量太多了啦" : "发车!" }}
+            ? `角色数量还不够哟. 差 ${playersNumber * 2 - totalCharacters} 个`
+            : totalCharacters > playersNumber * 2 ? `角色数量太多了啦. 多了 ${totalCharacters - playersNumber * 2} 个` : "发车!" }}
         </button>
       </div>
     </div>
