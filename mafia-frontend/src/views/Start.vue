@@ -10,8 +10,8 @@
       </div>
       <div v-if='playersNumber > 0'>
         <div v-for='(usedCharacter, index) of usedCharacters' :key='index' class='input-group'>
-          <select class="custom-select" v-model='usedCharacters[index]'>
-            <option v-if='usedCharacter.length > 0' selected :value='usedCharacter'>{{ usedCharacter }}</option>
+          <select class="custom-select" v-model='usedCharacters[index]' :disabled='index <= 3'>
+            <option v-if='usedCharacter.length > 0' selected :value='usedCharacter'>{{ usedCharacter + (index <= 3 ? " (固定)" : "")}}</option>
             <option v-for='(supportedCharacter, index) of supportedCharacters'
               :value='supportedCharacter' :key='index'
               v-if='usedCharacters.indexOf(supportedCharacter) < 0'>
@@ -19,7 +19,7 @@
             </option>
           </select>
           <input v-model.number='charactersCount[index]' type='number' class='form-control'
-            :class='{disabled: index <= 3}'>
+            :disabled='index <= 3'>
           <button style='float:left' class="btn btn-danger"
             :disabled='index <= 3'
             v-on:click='deleteCharacterType(index)'>
@@ -62,6 +62,24 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <h5 style='padding-top:10px'>最后机会确认一下板子</h5>
+      <div class='game-info'>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">角色名</th>
+              <th scope="col">数量</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for='(characterName, index) of usedCharacters' :key='index'>
+              <th scope="row">{{ characterName }}</th>
+              <td>{{ charactersCount[index] }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <div class='row bottom'>
         <button class='col btn btn-success' @click="toggleCharacters">{{ showCharacters ? "隐藏" : "查看" }}</button>
@@ -257,5 +275,9 @@ export default class Start extends Vue {
 
 .title {
   padding-top: 30px;
+}
+
+.game-info {
+  margin-top: 20px;
 }
 </style>
