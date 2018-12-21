@@ -20,7 +20,9 @@ const READABLE_NAME_PAIRS: Array<[CharacterType, string]> =
    [CharacterType.MUTER, '禁言长老'],
    [CharacterType.PRINCESS, '公主'],
    [CharacterType.KNIGHT, '骑士'],
-   [CharacterType.FOX, '狐狸']];
+   [CharacterType.FOX, '狐狸'],
+   [CharacterType.MOON, '月亮'],
+   [CharacterType.SUN, '太阳']];
 
 const READABLE_NAME_MAP = new Map<CharacterType, string>(READABLE_NAME_PAIRS);
 
@@ -50,7 +52,9 @@ const ENUM_NAME_PAIRS: Array<[CharacterType, string]> =
    [CharacterType.MUTER, 'MUTER'],
    [CharacterType.PRINCESS, 'PRINCESS'],
    [CharacterType.KNIGHT, 'KNIGHT'],
-   [CharacterType.FOX, 'FOX']];
+   [CharacterType.FOX, 'FOX'],
+   [CharacterType.MOON, 'MOON'],
+   [CharacterType.SUN, 'SUN']];
 
 const ENUM_NAME_MAP = new Map<CharacterType, string>(ENUM_NAME_PAIRS);
 
