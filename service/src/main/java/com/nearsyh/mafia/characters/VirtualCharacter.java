@@ -139,7 +139,7 @@ public class VirtualCharacter extends AbstractCharacter implements Character {
                 ascOrder ? "右" : "左");
         }
         if (game.getCurrentTurn().getMutedPlayerIndex() >= 0) {
-            message += String.format("(%s 号玩家禁言, 轮到他再说)",
+            message += String.format("(%s 号玩家禁言, 轮到 TA 再告诉 TA)",
                 game.getCurrentTurn().getMutedPlayerIndex() + 1);
         }
         return nextEventBuilder.setCurrentEventResponse(message);
