@@ -124,6 +124,23 @@ public final class GameAccessor {
         return doesPlayerSeemBad(game, game.getPlayers(playerIndex));
     }
 
+    public static boolean doFollowingPlayersSeemBad(Game game, int foxIndex) {
+        var verifiedCount = 0;
+        var previousPlayerIndex = foxIndex;
+        while (verifiedCount < 3) {
+            previousPlayerIndex = (previousPlayerIndex + 1) % game.getPastTurnsCount();
+            var currentPlayerIndex = previousPlayerIndex;
+            if (currentPlayerIndex == foxIndex) {
+                return false;
+            } else if (!isPlayerAlive(game, currentPlayerIndex)) {
+                continue;
+            } else if (doesPlayerSeemBad(game, currentPlayerIndex)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean doesPlayerSeemBad(Game game, Player player) {
         if (!player.getCharacterTop().getIsDead()) {
             switch (player.getCharacterTop().getCharacterType()) {
