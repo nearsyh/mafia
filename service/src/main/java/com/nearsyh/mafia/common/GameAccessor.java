@@ -283,9 +283,9 @@ public final class GameAccessor {
         var tmpGame = builder.build();
         gameStatusBuilder.clearOnSurfaceWolves()
             .addAllOnSurfaceWolves(tmpGame.getPlayersList().stream()
-            .filter(player -> isWolfOnSurface(tmpGame, player))
-            .map(Player::getIndex)
-            .collect(Collectors.toList()));
+                .filter(player -> isWolfOnSurface(tmpGame, player))
+                .map(Player::getIndex)
+                .collect(Collectors.toList()));
         return builder.setGameStatus(gameStatusBuilder).build();
     }
 
@@ -348,5 +348,11 @@ public final class GameAccessor {
                 .setCharacterTop(game.getPlayers(playerIndex).getCharacterBot())
                 .setCharacterBot(game.getPlayers(playerIndex).getCharacterTop()))
             .build();
+    }
+
+    public static boolean doesAffectLastNight(Game game) {
+        return game.getPastTurnsCount() > 0
+            && game.getPastTurns(game.getPastTurnsCount() - 1)
+            .getAffectedCharacter().getPlayerIndex() >= 0;
     }
 }
