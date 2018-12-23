@@ -61,12 +61,16 @@ public class Witch extends AbstractCharacter implements Character {
     public Game cure(Game game, Event event) {
         var gameBuilder = game.toBuilder();
         var currentTurn = game.getCurrentTurn().toBuilder();
+        var gameStatus = game.getGameStatus().toBuilder();
         if (!game.getGameStatus().getIsCureUsed()) {
             GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
-                .ifPresent(currentTurn::setCureCharacterIndex);
+                .ifPresent(index -> {
+                    currentTurn.setCureCharacterIndex(index);
+                    gameStatus.setIsCureUsed(true);
+                });
         }
         return gameBuilder
-            .setGameStatus(game.getGameStatus().toBuilder().setIsCureUsed(true))
+            .setGameStatus(gameStatus)
             .setCurrentTurn(currentTurn)
             .build();
     }
@@ -104,14 +108,18 @@ public class Witch extends AbstractCharacter implements Character {
     public Game toxic(Game game, Event event) {
         var gameBuilder = game.toBuilder();
         var currentTurn = game.getCurrentTurn().toBuilder();
+        var gameStatus = game.getGameStatus().toBuilder();
         if (game.getCurrentTurn().getCureCharacterIndex().getPlayerIndex() < 0
             && !game.getGameStatus().getIsToxicUsed()) {
             GameAccessor.getCurrentAliveCharacterIndex(game, event.getTargets(0))
-                .ifPresent(currentTurn::setToxicCharacterIndex);
+                .ifPresent(index -> {
+                    currentTurn.setToxicCharacterIndex(index);
+                    gameStatus.setIsToxicUsed(true);
+                });
         }
         return gameBuilder
             .setCurrentTurn(currentTurn)
-            .setGameStatus(game.getGameStatus().toBuilder().setIsToxicUsed(true))
+            .setGameStatus(gameStatus)
             .build();
     }
 }
