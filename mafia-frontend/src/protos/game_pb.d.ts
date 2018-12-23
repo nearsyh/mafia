@@ -365,6 +365,37 @@ export namespace Event {
   }
 }
 
+export class Template extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  getPlayersNumber(): number;
+  setPlayersNumber(value: number): void;
+
+  getCountsMap(): jspb.Map<string, number>;
+  clearCountsMap(): void;
+  getAccessTimes(): number;
+  setAccessTimes(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Template.AsObject;
+  static toObject(includeInstance: boolean, msg: Template): Template.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Template, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Template;
+  static deserializeBinaryFromReader(message: Template, reader: jspb.BinaryReader): Template;
+}
+
+export namespace Template {
+  export type AsObject = {
+    name: string,
+    playersNumber: number,
+    countsMap: Array<[string, number]>,
+    accessTimes: number,
+  }
+}
+
 export enum CharacterType {
   CHARACTER_TYPE_UNSPECIFIED = 0,
   NORMAL_VILLAGER = 1,
