@@ -36,6 +36,26 @@
             ? `角色数量还不够哟. 差 ${playersNumber * 2 - totalCharacters} 个`
             : totalCharacters > playersNumber * 2 ? `角色数量太多了啦. 多了 ${totalCharacters - playersNumber * 2} 个` : "发车!" }}
         </button>
+
+        <div v-if='templates.length > 0' class='list-group'>
+          <a href='#' class='list-group-item list-group-item-action'
+            v-for='(template, index) of templates' :key='index'
+            @click='useTemplate(template)'>
+            预置组合: {{ template }}
+          </a>
+        </div>
+
+        <div class='PlayersNumberSetter input-group'>
+          <div class='input-group-prepend'>
+            <span class='input-group-text'>预置组合名字</span>
+          </div>
+          <input v-model='templateName' type='text' class='form-control'>
+          <button type="button" class="btn btn-success"
+            :disabled='totalCharacters !== playersNumber * 2 || templateName.length <= 0' 
+            @click='upsertTemplate'>
+            {{ templateName.length > 0 && templateName === selectedTemplateName ? "更新" : "保存" }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -105,7 +125,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { getSupportedCharacterTypes, createGame, swapGame } from '@/lib/MafiaServiceConnector';
+import { getSupportedCharacterTypes, createGame, swapGame,
+         listTemplates, getTemplate, upsertTemplate } from '@/lib/MafiaServiceConnector';
 import { toReadableName, fromEnumName, toEnumName, fromReadableName, NO_PLAYER } from '@/lib/MafiaConstants';
 import { CharacterType, Game } from '@/protos/game_pb';
 import * as _ from 'lodash';
@@ -118,6 +139,10 @@ export default class Start extends Vue {
   private usedCharacters: string[] = [];
   private charactersCount: number[] = [];
 
+  private templates: string[] = [];
+  private templateName: string = '';
+  private selectedTemplateName: string = '';
+
   private game: Game = new Game();
   private currentPlayerIndex: number = NO_PLAYER;
   private characters: string[] = [];
@@ -129,7 +154,7 @@ export default class Start extends Vue {
       .map(fromEnumName).map(toReadableName);
   }
 
-  private updatePlayersNumber() {
+  private async updatePlayersNumber() {
     this.usedCharacters = [
       toReadableName(CharacterType.NORMAL_VILLAGER),
       toReadableName(CharacterType.SEER),
@@ -140,6 +165,46 @@ export default class Start extends Vue {
       1,
       1,
       1];
+    this.templates = await listTemplates(this.playersNumber);
+  }
+
+  private async useTemplate(templateName: string) {
+    this.selectedTemplateName = templateName;
+    this.templateName = templateName;
+    const template = await getTemplate(this.playersNumber, templateName);
+    this.usedCharacters = [
+      toReadableName(CharacterType.NORMAL_VILLAGER),
+      toReadableName(CharacterType.SEER),
+      toReadableName(CharacterType.WITCH),
+      toReadableName(CharacterType.GUARDIAN)];
+    this.charactersCount = [
+      this.playersNumber,
+      1,
+      1,
+      1];
+    template.getCountsMap().forEach((count, character) => {
+      const type = fromEnumName(character);
+      if (type !== CharacterType.NORMAL_VILLAGER
+      && type !== CharacterType.SEER
+      && type !== CharacterType.WITCH
+      && type !== CharacterType.GUARDIAN) {
+        this.usedCharacters.push(toReadableName(type));
+        this.charactersCount.push(count);
+      }
+    });
+  }
+
+  private async upsertTemplate() {
+    if (this.playersNumber > 0 && this.templateName.length > 0) {
+      const ret = new Map<string, number>();
+      this.usedCharacters.forEach((characterReadableName, index) => {
+        ret.set(toEnumName(fromReadableName(characterReadableName)), this.charactersCount[index]);
+      });
+      await upsertTemplate(this.playersNumber, this.templateName, ret);
+      if (!this.templates.includes(this.templateName)) {
+        this.templates.push(this.templateName);
+      }
+    }
   }
 
   private deleteCharacterType(index: number) {

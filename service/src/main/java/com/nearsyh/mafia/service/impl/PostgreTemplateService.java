@@ -80,10 +80,8 @@ public class PostgreTemplateService implements TemplateService {
                 statement.setString(2, name);
                 statement.setBytes(3, template.toByteArray());
                 statement.setInt(4, template.getAccessTimes());
-                statement.setInt(5, playersNumber);
-                statement.setString(6, name);
-                statement.setBytes(7, template.toByteArray());
-                statement.setInt(8, template.getAccessTimes());
+                statement.setBytes(5, template.toByteArray());
+                statement.setInt(6, template.getAccessTimes());
                 statement.execute();
                 return template;
             }
