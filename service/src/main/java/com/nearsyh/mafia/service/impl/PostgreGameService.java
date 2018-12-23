@@ -10,6 +10,7 @@ import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.service.GameService;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -46,15 +47,17 @@ public class PostgreGameService implements GameService {
 
     @Override
     public Mono<Game> createGame(Game game) {
+        var gameId = UUID.randomUUID().toString();
+        var finalGame = game.toBuilder().setId(gameId).build();
         return QueryUtils.doWorkReactive(dataSource, connection -> {
             try (var statement = connection.prepareStatement(
                 constructInsertSql(GAME_TABLE, List.of(GAME_ID_FIELD),
                     GAME_BINARY_FIELD, GAME_START_TIMESTAMP_FIELD))) {
-                statement.setString(1, game.getId());
-                statement.setBytes(2, game.toByteArray());
-                statement.setLong(3, game.getStartTimestamp());
+                statement.setString(1, finalGame.getId());
+                statement.setBytes(2, finalGame.toByteArray());
+                statement.setLong(3, finalGame.getStartTimestamp());
                 statement.execute();
-                return game;
+                return finalGame;
             }
         });
     }
