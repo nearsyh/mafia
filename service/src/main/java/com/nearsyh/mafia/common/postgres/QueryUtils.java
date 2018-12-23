@@ -32,6 +32,15 @@ public final class QueryUtils {
         }
     }
 
+    public static <U> Mono<U> doWorkReactiveWithReactiveFunction(
+        DataSource dataSource, CheckedFunction<Connection, Mono<U>, SQLException> work) {
+        try (Connection connection = dataSource.getConnection()) {
+            return work.apply(connection);
+        } catch (SQLException e) {
+            return Mono.error(e);
+        }
+    }
+
     public static <U> U doWork(DataSource dataSource,
         CheckedFunction<Connection, U, SQLException> work) {
         try (Connection connection = dataSource.getConnection()) {

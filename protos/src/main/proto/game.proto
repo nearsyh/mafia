@@ -141,3 +141,9 @@ message Event {
   string current_event_response = 7;
 }
 
+message Template {
+  string name = 1;
+  int32 players_number = 2;
+  map<string, int32> counts = 3;
+  int32 access_times = 4;
+}
