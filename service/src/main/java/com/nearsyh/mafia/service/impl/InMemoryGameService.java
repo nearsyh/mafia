@@ -2,12 +2,9 @@ package com.nearsyh.mafia.service.impl;
 
 import com.nearsyh.mafia.protos.Game;
 import com.nearsyh.mafia.service.GameService;
-import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -15,7 +12,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-@Component
 public class InMemoryGameService implements GameService {
 
     private static final Map<String, Game> GAME_MAP = new HashMap<>();
